@@ -19,31 +19,15 @@ internal class ProductionStorageContract : IProductionStorageContract
         {
             cfg.CreateMap<Production, ProductionDataModel>();
             cfg.CreateMap<ProductionDataModel, Production>();
-            cfg.CreateMap<DetailProduction, DetailProductionDataModel>();
-            cfg.CreateMap<DetailProductionDataModel, DetailProduction>();
         });
         _mapper = new Mapper(config);
     }
 
-    public List<ProductionDataModel> GetList(string? workshopId = null, string? detailId = null)
+    public List<ProductionDataModel> GetList()
     {
         try
         {
-            var query = _dbContext.Productions
-                .Include(p => p.Workshop)
-                .Include(p => p.Details)!
-                .ThenInclude(d => d.Detail)
-                .AsQueryable();
-
-            if (workshopId is not null)
-                query = query.Where(p => p.WorkshopId == workshopId);
-
-            if (detailId is not null)
-                query = query.Where(p => p.Details!.Any(d => d.DetailId == detailId));
-
-            return query
-                .Select(p => _mapper.Map<ProductionDataModel>(p))
-                .ToList();
+            return [.._dbContext.Productions.Select(p => _mapper.Map<ProductionDataModel>(p))];
         }
         catch (Exception ex)
         {
@@ -56,8 +40,20 @@ internal class ProductionStorageContract : IProductionStorageContract
     {
         try
         {
-            var production = GetProductionById(id);
-            return production != null ? _mapper.Map<ProductionDataModel>(production) : null;
+            return _mapper.Map<ProductionDataModel>(GetProductionById(id));
+        }
+        catch (Exception ex)
+        {
+            _dbContext.ChangeTracker.Clear();
+            throw new StorageException(ex);
+        }
+    }
+
+    public ProductionDataModel? GetElementByName(string name)
+    {
+        try
+        {
+            return _mapper.Map<ProductionDataModel>(_dbContext.Productions.FirstOrDefault(p => p.Name == name));
         }
         catch (Exception ex)
         {
@@ -70,8 +66,7 @@ internal class ProductionStorageContract : IProductionStorageContract
     {
         try
         {
-            var production = _mapper.Map<Production>(productionDataModel);
-            _dbContext.Productions.Add(production);
+            _dbContext.Productions.Add(_mapper.Map<Production>(productionDataModel));
             _dbContext.SaveChanges();
         }
         catch (InvalidOperationException ex) when (ex.TargetSite?.Name == "ThrowIdentityConflict")
@@ -92,8 +87,7 @@ internal class ProductionStorageContract : IProductionStorageContract
         {
             var existingProduction = GetProductionById(productionDataModel.Id)
                                      ?? throw new ElementNotFoundException(productionDataModel.Id);
-
-            _mapper.Map(productionDataModel, existingProduction);
+            _dbContext.Productions.Update(_mapper.Map(productionDataModel, existingProduction));
             _dbContext.SaveChanges();
         }
         catch (Exception ex) when (ex is ElementNotFoundException)
@@ -128,53 +122,9 @@ internal class ProductionStorageContract : IProductionStorageContract
         }
     }
 
-    public List<ProductionDataModel> GetElementsByWorkshopId(string workshopId)
-    {
-        try
-        {
-            var productions = _dbContext.Productions
-                .Include(p => p.Workshop)
-                .Include(p => p.Details)!
-                .ThenInclude(d => d.Detail)
-                .Where(p => p.WorkshopId == workshopId)
-                .ToList();
-
-            return productions
-                .Select(p => _mapper.Map<ProductionDataModel>(p))
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            _dbContext.ChangeTracker.Clear();
-            throw new StorageException(ex);
-        }
-    }
-
-    public List<ProductionDataModel> GetElementsByAddress(string address)
-    {
-        try
-        {
-            var productions = _dbContext.Productions
-                .Include(p => p.Workshop)
-                .Include(p => p.Details)!
-                .ThenInclude(d => d.Detail)
-                .Where(p => p.Workshop!.Address == address)
-                .ToList();
-
-            return productions
-                .Select(p => _mapper.Map<ProductionDataModel>(p))
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            _dbContext.ChangeTracker.Clear();
-            throw new StorageException(ex);
-        }
-    }
-
     private Production? GetProductionById(string id) => _dbContext.Productions
-        .Include(p => p.Workshop)
-        .Include(p => p.Details)!
+        .Include(p => p.Workshops)
+        .Include(p => p.DetailProductions)!
         .ThenInclude(d => d.Detail)
         .FirstOrDefault(p => p.Id == id);
 }

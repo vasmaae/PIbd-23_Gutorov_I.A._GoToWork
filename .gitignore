@@ -3,7 +3,7 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # Custom JetBrains ignore
-.idea/*
+.idea/
 
 # User-specific stuff
 .idea/**/workspace.xml
@@ -481,4 +481,3 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-

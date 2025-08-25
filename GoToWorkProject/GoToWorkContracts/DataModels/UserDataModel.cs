@@ -11,7 +11,6 @@ public class UserDataModel(
     string login,
     string email,
     string password,
-    bool isDeleted,
     UserRole role) : IValidation
 {
     public string Id { get; } = id;

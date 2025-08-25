@@ -5,7 +5,7 @@ namespace GoToWorkDatabase.Models;
 internal class Production
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
-    public required string WorkshopId { get; set; }
-    public Workshop? Workshop { get; set; }
-    [ForeignKey("ProductionId")] public List<DetailProduction>? Details { get; set; }
+    public required string Name { get; set; }
+    [ForeignKey("ProductionId")] public List<DetailProduction>? DetailProductions { get; set; }
+    [ForeignKey("ProductionId")] public List<Workshop>? Workshops { get; set; }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GoToWorkDatabase.Migrations
 {
     [DbContext(typeof(GoToWorkDbContext))]
-    [Migration("20250527220044_Initial")]
+    [Migration("20250825165651_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -30,6 +30,9 @@ namespace GoToWorkDatabase.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("Material")
                         .HasColumnType("integer");
 
@@ -37,46 +40,40 @@ namespace GoToWorkDatabase.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Details");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.DetailProduct", b =>
                 {
-                    b.Property<string>("ProductId")
+                    b.Property<string>("DetailId")
                         .HasColumnType("text");
 
-                    b.Property<string>("DetailId")
+                    b.Property<string>("ProductId")
                         .HasColumnType("text");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.HasKey("ProductId", "DetailId");
+                    b.HasKey("DetailId", "ProductId");
 
-                    b.HasIndex("DetailId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("DetailProducts");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.DetailProduction", b =>
                 {
-                    b.Property<string>("ProductionId")
-                        .HasColumnType("text");
-
                     b.Property<string>("DetailId")
                         .HasColumnType("text");
 
-                    b.HasKey("ProductionId", "DetailId");
+                    b.Property<string>("ProductionId")
+                        .HasColumnType("text");
 
-                    b.HasIndex("DetailId");
+                    b.HasKey("DetailId", "ProductionId");
+
+                    b.HasIndex("ProductionId");
 
                     b.ToTable("DetailProductions");
                 });
@@ -86,18 +83,11 @@ namespace GoToWorkDatabase.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("DateOfDelete")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -142,9 +132,6 @@ namespace GoToWorkDatabase.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("EmployeeId")
-                        .HasColumnType("text");
-
                     b.Property<int>("MachineType")
                         .HasColumnType("integer");
 
@@ -154,24 +141,10 @@ namespace GoToWorkDatabase.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex("Model")
+                        .IsUnique();
 
                     b.ToTable("Machines");
-                });
-
-            modelBuilder.Entity("GoToWorkDatabase.Models.MachineProduct", b =>
-                {
-                    b.Property<string>("MachineId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProductId")
-                        .HasColumnType("text");
-
-                    b.HasKey("MachineId", "ProductId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("MachineProducts");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.Product", b =>
@@ -183,7 +156,6 @@ namespace GoToWorkDatabase.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("MachineId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -194,6 +166,9 @@ namespace GoToWorkDatabase.Migrations
 
                     b.HasIndex("MachineId");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Products");
                 });
 
@@ -202,30 +177,16 @@ namespace GoToWorkDatabase.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("WorkshopId")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WorkshopId");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Productions");
-                });
-
-            modelBuilder.Entity("GoToWorkDatabase.Models.ProductionWorkshop", b =>
-                {
-                    b.Property<string>("ProductionId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("WorkshopId")
-                        .HasColumnType("text");
-
-                    b.HasKey("ProductionId", "WorkshopId");
-
-                    b.HasIndex("WorkshopId");
-
-                    b.ToTable("ProductionWorkshops");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.User", b =>
@@ -237,9 +198,6 @@ namespace GoToWorkDatabase.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasColumnType("text");
@@ -247,6 +205,9 @@ namespace GoToWorkDatabase.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -268,7 +229,7 @@ namespace GoToWorkDatabase.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("EmployeeId")
+                    b.Property<string>("ProductionId")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -276,32 +237,21 @@ namespace GoToWorkDatabase.Migrations
                     b.HasIndex("Address")
                         .IsUnique();
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex("ProductionId");
 
                     b.ToTable("Workshops");
-                });
-
-            modelBuilder.Entity("GoToWorkDatabase.Models.Detail", b =>
-                {
-                    b.HasOne("GoToWorkDatabase.Models.User", "User")
-                        .WithMany("Details")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.DetailProduct", b =>
                 {
                     b.HasOne("GoToWorkDatabase.Models.Detail", "Detail")
-                        .WithMany("Products")
+                        .WithMany("DetailProducts")
                         .HasForeignKey("DetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GoToWorkDatabase.Models.Product", "Product")
-                        .WithMany("Details")
+                        .WithMany("DetailProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -314,13 +264,13 @@ namespace GoToWorkDatabase.Migrations
             modelBuilder.Entity("GoToWorkDatabase.Models.DetailProduction", b =>
                 {
                     b.HasOne("GoToWorkDatabase.Models.Detail", "Detail")
-                        .WithMany("Productions")
+                        .WithMany("DetailProductions")
                         .HasForeignKey("DetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GoToWorkDatabase.Models.Production", "Production")
-                        .WithMany("Details")
+                        .WithMany("DetailProductions")
                         .HasForeignKey("ProductionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -332,25 +282,21 @@ namespace GoToWorkDatabase.Migrations
 
             modelBuilder.Entity("GoToWorkDatabase.Models.Employee", b =>
                 {
-                    b.HasOne("GoToWorkDatabase.Models.User", "User")
+                    b.HasOne("GoToWorkDatabase.Models.User", null)
                         .WithMany("Employees")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.EmployeeMachine", b =>
                 {
                     b.HasOne("GoToWorkDatabase.Models.Employee", "Employee")
-                        .WithMany()
+                        .WithMany("EmployeeMachines")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GoToWorkDatabase.Models.Machine", "Machine")
-                        .WithMany("Employees")
+                        .WithMany("EmployeeMachines")
                         .HasForeignKey("MachineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -363,7 +309,7 @@ namespace GoToWorkDatabase.Migrations
             modelBuilder.Entity("GoToWorkDatabase.Models.EmployeeWorkshop", b =>
                 {
                     b.HasOne("GoToWorkDatabase.Models.Employee", "Employee")
-                        .WithMany()
+                        .WithMany("EmployeeWorkshops")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -379,117 +325,59 @@ namespace GoToWorkDatabase.Migrations
                     b.Navigation("Workshop");
                 });
 
-            modelBuilder.Entity("GoToWorkDatabase.Models.Machine", b =>
-                {
-                    b.HasOne("GoToWorkDatabase.Models.Employee", null)
-                        .WithMany("Machines")
-                        .HasForeignKey("EmployeeId");
-                });
-
-            modelBuilder.Entity("GoToWorkDatabase.Models.MachineProduct", b =>
-                {
-                    b.HasOne("GoToWorkDatabase.Models.Machine", "Machine")
-                        .WithMany("Products")
-                        .HasForeignKey("MachineId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GoToWorkDatabase.Models.Product", "Product")
-                        .WithMany("Products")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Machine");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("GoToWorkDatabase.Models.Product", b =>
                 {
                     b.HasOne("GoToWorkDatabase.Models.Machine", "Machine")
-                        .WithMany()
-                        .HasForeignKey("MachineId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Products")
+                        .HasForeignKey("MachineId");
 
                     b.Navigation("Machine");
-                });
-
-            modelBuilder.Entity("GoToWorkDatabase.Models.Production", b =>
-                {
-                    b.HasOne("GoToWorkDatabase.Models.Workshop", "Workshop")
-                        .WithMany()
-                        .HasForeignKey("WorkshopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Workshop");
-                });
-
-            modelBuilder.Entity("GoToWorkDatabase.Models.ProductionWorkshop", b =>
-                {
-                    b.HasOne("GoToWorkDatabase.Models.Production", "Production")
-                        .WithMany()
-                        .HasForeignKey("ProductionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GoToWorkDatabase.Models.Workshop", "Workshop")
-                        .WithMany()
-                        .HasForeignKey("WorkshopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Production");
-
-                    b.Navigation("Workshop");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.Workshop", b =>
                 {
-                    b.HasOne("GoToWorkDatabase.Models.Employee", null)
+                    b.HasOne("GoToWorkDatabase.Models.Production", "Production")
                         .WithMany("Workshops")
-                        .HasForeignKey("EmployeeId");
+                        .HasForeignKey("ProductionId");
+
+                    b.Navigation("Production");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.Detail", b =>
                 {
-                    b.Navigation("Productions");
+                    b.Navigation("DetailProductions");
 
-                    b.Navigation("Products");
+                    b.Navigation("DetailProducts");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.Employee", b =>
                 {
-                    b.Navigation("Machines");
+                    b.Navigation("EmployeeMachines");
 
-                    b.Navigation("Workshops");
+                    b.Navigation("EmployeeWorkshops");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.Machine", b =>
                 {
-                    b.Navigation("Employees");
+                    b.Navigation("EmployeeMachines");
 
                     b.Navigation("Products");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.Product", b =>
                 {
-                    b.Navigation("Details");
-
-                    b.Navigation("Products");
+                    b.Navigation("DetailProducts");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.Production", b =>
                 {
-                    b.Navigation("Details");
+                    b.Navigation("DetailProductions");
+
+                    b.Navigation("Workshops");
                 });
 
             modelBuilder.Entity("GoToWorkDatabase.Models.User", b =>
                 {
-                    b.Navigation("Details");
-
                     b.Navigation("Employees");
                 });
 

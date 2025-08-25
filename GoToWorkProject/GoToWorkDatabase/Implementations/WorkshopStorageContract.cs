@@ -19,27 +19,18 @@ internal class WorkshopStorageContract : IWorkshopStorageContract
         {
             cfg.CreateMap<Workshop, WorkshopDataModel>();
             cfg.CreateMap<WorkshopDataModel, Workshop>();
-            cfg.CreateMap<EmployeeWorkshop, EmployeeWorkshopDataModel>();
-            cfg.CreateMap<EmployeeWorkshopDataModel, EmployeeWorkshop>();
         });
         _mapper = new Mapper(config);
     }
 
-    public List<WorkshopDataModel> GetList(string? employeeId = null)
+    public List<WorkshopDataModel> GetList(string? productionId = null)
     {
         try
         {
-            var query = _dbContext.Workshops
-                .Include(w => w.EmployeeWorkshops)!
-                .ThenInclude(ew => ew.Employee)
-                .AsQueryable();
-
-            if (!string.IsNullOrEmpty(employeeId))
-                query = query.Where(w => w.EmployeeWorkshops!.Any(ew => ew.EmployeeId == employeeId));
-
-            return query
-                .Select(w => _mapper.Map<WorkshopDataModel>(w))
-                .ToList();
+            var query = _dbContext.Workshops.AsQueryable();
+            if (productionId is not null)
+                query = query.Where(w => w.ProductionId == productionId);
+            return [.. query.Select(w => _mapper.Map<WorkshopDataModel>(w))];
         }
         catch (Exception ex)
         {
@@ -52,8 +43,7 @@ internal class WorkshopStorageContract : IWorkshopStorageContract
     {
         try
         {
-            var workshop = GetWorkshopById(id);
-            return workshop != null ? _mapper.Map<WorkshopDataModel>(workshop) : null;
+            return _mapper.Map<WorkshopDataModel>(GetWorkshopById(id));
         }
         catch (Exception ex)
         {
@@ -62,19 +52,12 @@ internal class WorkshopStorageContract : IWorkshopStorageContract
         }
     }
 
-    public List<WorkshopDataModel> GetElementsByAddress(string address)
+    public WorkshopDataModel? GetElementByAddress(string address)
     {
         try
         {
-            var workshops = _dbContext.Workshops
-                .Include(w => w.EmployeeWorkshops)!
-                .ThenInclude(ew => ew.Employee)
-                .Where(w => w.Address == address)
-                .ToList();
-
-            return workshops
-                .Select(w => _mapper.Map<WorkshopDataModel>(w))
-                .ToList();
+            var workshop = _dbContext.Workshops.FirstOrDefault(w => w.Address == address);
+            return _mapper.Map<WorkshopDataModel>(workshop);
         }
         catch (Exception ex)
         {
@@ -87,8 +70,7 @@ internal class WorkshopStorageContract : IWorkshopStorageContract
     {
         try
         {
-            var workshop = _mapper.Map<Workshop>(workshopDataModel);
-            _dbContext.Workshops.Add(workshop);
+            _dbContext.Workshops.Add(_mapper.Map<Workshop>(workshopDataModel));
             _dbContext.SaveChanges();
         }
         catch (InvalidOperationException ex) when (ex.TargetSite?.Name == "ThrowIdentityConflict")
@@ -107,10 +89,9 @@ internal class WorkshopStorageContract : IWorkshopStorageContract
     {
         try
         {
-            var existingWorkshop = GetWorkshopById(workshopDataModel.Id)
-                                   ?? throw new ElementNotFoundException(workshopDataModel.Id);
-
-            _mapper.Map(workshopDataModel, existingWorkshop);
+            var existingWorkshop = GetWorkshopById(workshopDataModel.Id) ??
+                                   throw new ElementNotFoundException(workshopDataModel.Id);
+            _dbContext.Workshops.Update(_mapper.Map(workshopDataModel, existingWorkshop));
             _dbContext.SaveChanges();
         }
         catch (Exception ex) when (ex is ElementNotFoundException)
@@ -145,8 +126,5 @@ internal class WorkshopStorageContract : IWorkshopStorageContract
         }
     }
 
-    private Workshop? GetWorkshopById(string id) => _dbContext.Workshops
-        .Include(w => w.EmployeeWorkshops)!
-        .ThenInclude(ew => ew.Employee)
-        .FirstOrDefault(w => w.Id == id);
+    private Workshop? GetWorkshopById(string id) => _dbContext.Workshops.FirstOrDefault(w => w.Id == id);
 }

@@ -8,12 +8,14 @@ namespace GoToWorkContracts.DataModels;
 public class DetailDataModel(
     string id,
     string name,
-    MaterialType material)
+    MaterialType material,
+    DateTime creationDate)
     : IValidation
 {
     public string Id { get; } = id;
     public string Name { get; } = name;
     public MaterialType Material { get; } = material;
+    public DateTime CreationDate { get; } = creationDate.ToUniversalTime();
 
     public void Validate()
     {
@@ -25,5 +27,7 @@ public class DetailDataModel(
             throw new ValidationException("Field Name is empty");
         if (Material == MaterialType.None)
             throw new ValidationException("Field Material is empty");
+        if (CreationDate > DateTime.UtcNow)
+            throw new ValidationException("The value in the field Id is not a valid Date");
     }
 }

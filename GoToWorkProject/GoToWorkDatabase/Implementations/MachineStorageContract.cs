@@ -19,27 +19,15 @@ internal class MachineStorageContract : IMachineStorageContract
         {
             cfg.CreateMap<Machine, MachineDataModel>();
             cfg.CreateMap<MachineDataModel, Machine>();
-            cfg.CreateMap<EmployeeMachine, EmployeeMachineDataModel>();
-            cfg.CreateMap<EmployeeMachineDataModel, EmployeeMachine>();
         });
         _mapper = new Mapper(config);
     }
 
-    public List<MachineDataModel> GetList(string? employeeId = null)
+    public List<MachineDataModel> GetList()
     {
         try
         {
-            var query = _dbContext.Machines
-                .Include(m => m.Employees)!
-                .ThenInclude(em => em.Employee)
-                .AsQueryable();
-
-            if (employeeId is not null)
-                query = query.Where(m => m.Employees!.Any(em => em.EmployeeId == employeeId));
-
-            return query
-                .Select(m => _mapper.Map<MachineDataModel>(m))
-                .ToList();
+            return [.. _dbContext.Machines.Select(m => _mapper.Map<MachineDataModel>(m))];
         }
         catch (Exception ex)
         {
@@ -52,8 +40,7 @@ internal class MachineStorageContract : IMachineStorageContract
     {
         try
         {
-            var machine = GetMachineById(id);
-            return machine != null ? _mapper.Map<MachineDataModel>(machine) : null;
+            return _mapper.Map<MachineDataModel>(GetMachineById(id));
         }
         catch (Exception ex)
         {
@@ -62,19 +49,11 @@ internal class MachineStorageContract : IMachineStorageContract
         }
     }
 
-    public List<MachineDataModel> GetElementsByModel(string model)
+    public MachineDataModel? GetElementByModel(string model)
     {
         try
         {
-            var machines = _dbContext.Machines
-                .Include(m => m.Employees)!
-                .ThenInclude(em => em.Employee)
-                .Where(m => m.Model == model)
-                .ToList();
-
-            return machines
-                .Select(m => _mapper.Map<MachineDataModel>(m))
-                .ToList();
+            return _mapper.Map<MachineDataModel>(_dbContext.Machines.FirstOrDefault(m => m.Model == model));
         }
         catch (Exception ex)
         {
@@ -87,8 +66,7 @@ internal class MachineStorageContract : IMachineStorageContract
     {
         try
         {
-            var machine = _mapper.Map<Machine>(machineDataModel);
-            _dbContext.Machines.Add(machine);
+            _dbContext.Machines.Add(_mapper.Map<Machine>(machineDataModel));
             _dbContext.SaveChanges();
         }
         catch (InvalidOperationException ex) when (ex.TargetSite?.Name == "ThrowIdentityConflict")
@@ -109,8 +87,7 @@ internal class MachineStorageContract : IMachineStorageContract
         {
             var existingMachine = GetMachineById(machineDataModel.Id)
                                   ?? throw new ElementNotFoundException(machineDataModel.Id);
-
-            _mapper.Map(machineDataModel, existingMachine);
+            _dbContext.Machines.Update(_mapper.Map(machineDataModel, existingMachine));
             _dbContext.SaveChanges();
         }
         catch (Exception ex) when (ex is ElementNotFoundException)
@@ -145,8 +122,8 @@ internal class MachineStorageContract : IMachineStorageContract
         }
     }
 
-    private Machine? GetMachineById(string id) => _dbContext.Machines
-        .Include(m => m.Employees)!
-        .ThenInclude(em => em.Employee)
-        .FirstOrDefault(m => m.Id == id);
+    private Machine? GetMachineById(string id)
+    {
+        return _dbContext.Machines.FirstOrDefault(m => m.Id == id);
+    }
 }

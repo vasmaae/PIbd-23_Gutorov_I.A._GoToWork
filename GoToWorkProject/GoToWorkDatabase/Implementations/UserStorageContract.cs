@@ -23,13 +23,11 @@ internal class UserStorageContract : IUserStorageContract
         _mapper = new Mapper(config);
     }
 
-    public List<UserDataModel> GetList(bool? onlyActive = true)
+    public List<UserDataModel> GetList()
     {
         try
         {
-            var query = _dbContext.Users.AsQueryable();
-            if (onlyActive == true) query = query.Where(u => !u.IsDeleted);
-            return [.. query.Select(u => _mapper.Map<UserDataModel>(u))];
+            return [.. _dbContext.Users.Select(u => _mapper.Map<UserDataModel>(u))];
         }
         catch (Exception ex)
         {
@@ -42,8 +40,7 @@ internal class UserStorageContract : IUserStorageContract
     {
         try
         {
-            var user = GetUserById(id);
-            return user != null ? _mapper.Map<UserDataModel>(user) : null;
+            return _mapper.Map<UserDataModel>(GetUserById(id));
         }
         catch (Exception ex)
         {
@@ -56,8 +53,7 @@ internal class UserStorageContract : IUserStorageContract
     {
         try
         {
-            var user = _dbContext.Users.FirstOrDefault(u => u.Login == login);
-            return user != null ? _mapper.Map<UserDataModel>(user) : null;
+            return _mapper.Map<UserDataModel>(_dbContext.Users.FirstOrDefault(u => u.Login == login));
         }
         catch (Exception ex)
         {
@@ -70,8 +66,7 @@ internal class UserStorageContract : IUserStorageContract
     {
         try
         {
-            var user = _dbContext.Users.FirstOrDefault(u => u.Email == email);
-            return user != null ? _mapper.Map<UserDataModel>(user) : null;
+            return _mapper.Map<UserDataModel>(_dbContext.Users.FirstOrDefault(u => u.Email == email));
         }
         catch (Exception ex)
         {
@@ -84,8 +79,7 @@ internal class UserStorageContract : IUserStorageContract
     {
         try
         {
-            var user = _mapper.Map<User>(userDataModel);
-            _dbContext.Users.Add(user);
+            _dbContext.Users.Add(_mapper.Map<User>(userDataModel));
             _dbContext.SaveChanges();
         }
         catch (InvalidOperationException ex) when (ex.TargetSite?.Name == "ThrowIdentityConflict")
@@ -106,7 +100,6 @@ internal class UserStorageContract : IUserStorageContract
         {
             var existingUser = GetUserById(userDataModel.Id)
                                ?? throw new ElementNotFoundException(userDataModel.Id);
-
             _mapper.Map(userDataModel, existingUser);
             _dbContext.SaveChanges();
         }
@@ -127,8 +120,7 @@ internal class UserStorageContract : IUserStorageContract
         try
         {
             var user = GetUserById(id) ?? throw new ElementNotFoundException(id);
-            if (user.IsDeleted) throw new ElementDeletedException(id);
-            user.IsDeleted = true;
+            _dbContext.Users.Remove(user);
             _dbContext.SaveChanges();
         }
         catch (Exception ex) when (ex is ElementNotFoundException or ElementDeletedException)
@@ -143,28 +135,5 @@ internal class UserStorageContract : IUserStorageContract
         }
     }
 
-    public void ResElement(string id)
-    {
-        try
-        {
-            var user = GetUserById(id) ?? throw new ElementNotFoundException(id);
-            user.IsDeleted = false;
-            _dbContext.SaveChanges();
-        }
-        catch (Exception ex) when (ex is ElementNotFoundException)
-        {
-            _dbContext.ChangeTracker.Clear();
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _dbContext.ChangeTracker.Clear();
-            throw new StorageException(ex);
-        }
-    }
-
-    private User? GetUserById(string id) => _dbContext.Users
-        .Include(u => u.Details)
-        .Include(u => u.Employees)
-        .FirstOrDefault(u => u.Id == id);
+    private User? GetUserById(string id) => _dbContext.Users.FirstOrDefault(u => u.Id == id);
 }

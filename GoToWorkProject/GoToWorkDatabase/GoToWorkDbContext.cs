@@ -20,12 +20,10 @@ internal class GoToWorkDbContext : DbContext
     public DbSet<EmployeeMachine> EmployeeMachines { get; set; }
     public DbSet<EmployeeWorkshop> EmployeeWorkshops { get; set; }
     public DbSet<Machine> Machines { get; set; }
-    public DbSet<MachineProduct> MachineProducts { get; set; }
-    public DbSet<Product> Products { get; set; }
     public DbSet<Production> Productions { get; set; }
-    public DbSet<ProductionWorkshop> ProductionWorkshops { get; set; }
-    public DbSet<User> Users { get; set; }
+    public DbSet<Product> Products { get; set; }
     public DbSet<Workshop> Workshops { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -40,31 +38,38 @@ internal class GoToWorkDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Login)
             .IsUnique();
-
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
-
         modelBuilder.Entity<Workshop>()
             .HasIndex(w => w.Address)
             .IsUnique();
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.Name)
+            .IsUnique();
+        modelBuilder.Entity<Production>()
+            .HasIndex(p => p.Name)
+            .IsUnique();
+        modelBuilder.Entity<Machine>()
+            .HasIndex(m => m.Model)
+            .IsUnique();
+
+        modelBuilder.Entity<Machine>()
+            .HasMany(m => m.Products)
+            .WithOne(p => p.Machine)
+            .HasForeignKey(m => m.MachineId);
+        modelBuilder.Entity<Production>()
+            .HasMany(p => p.Workshops)
+            .WithOne(w => w.Production)
+            .HasForeignKey(w => w.ProductionId);
 
         modelBuilder.Entity<DetailProduct>()
-            .HasKey(dp => new { dp.ProductId, dp.DetailId });
-
+            .HasKey(dp => new { dp.DetailId, dp.ProductId });
         modelBuilder.Entity<DetailProduction>()
-            .HasKey(dp => new { dp.ProductionId, dp.DetailId });
-
+            .HasKey(dp => new { dp.DetailId, dp.ProductionId });
         modelBuilder.Entity<EmployeeMachine>()
             .HasKey(em => new { em.EmployeeId, em.MachineId });
-
         modelBuilder.Entity<EmployeeWorkshop>()
             .HasKey(ew => new { ew.EmployeeId, ew.WorkshopId });
-
-        modelBuilder.Entity<MachineProduct>()
-            .HasKey(mp => new { mp.MachineId, mp.ProductId });
-
-        modelBuilder.Entity<ProductionWorkshop>()
-            .HasKey(pw => new { pw.ProductionId, pw.WorkshopId });
     }
 }

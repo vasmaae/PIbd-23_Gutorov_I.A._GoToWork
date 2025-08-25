@@ -23,12 +23,15 @@ internal class DetailStorageContract : IDetailStorageContract
         _mapper = new Mapper(config);
     }
 
-    public List<DetailDataModel> GetList(string? userId = null)
+    public List<DetailDataModel> GetList(DateTime? startDate = null, DateTime? endDate = null)
     {
         try
         {
-            var query = _dbContext.Details.Include(x => x.User).AsQueryable();
-            if (userId is not null) query = query.Where(x => x.UserId == userId);
+            var query = _dbContext.Details.AsQueryable();
+            if (startDate is not null)
+                query = query.Where(x => x.CreationDate >= startDate);
+            if (endDate is not null)
+                query = query.Where(x => x.CreationDate <= endDate);
             return [.. query.Select(d => _mapper.Map<DetailDataModel>(d))];
         }
         catch (Exception ex)
@@ -124,9 +127,5 @@ internal class DetailStorageContract : IDetailStorageContract
         }
     }
 
-    private Detail? GetDetailById(string id) => _dbContext.Details
-        .Include(x => x.User)
-        .Include(x => x.Products)
-        .Include(x => x.Productions)
-        .FirstOrDefault(d => d.Id == id);
+    private Detail? GetDetailById(string id) => _dbContext.Details.FirstOrDefault(d => d.Id == id);
 }

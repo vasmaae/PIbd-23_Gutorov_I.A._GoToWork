@@ -19,38 +19,23 @@ internal class ProductStorageContract : IProductStorageContract
         {
             cfg.CreateMap<Product, ProductDataModel>();
             cfg.CreateMap<ProductDataModel, Product>();
-            cfg.CreateMap<DetailProduct, DetailProductDataModel>();
-            cfg.CreateMap<DetailProductDataModel, DetailProduct>();
         });
         _mapper = new Mapper(config);
     }
 
     public List<ProductDataModel> GetList(DateTime? startDate = null, DateTime? endDate = null,
-        string? machineId = null, string? detailId = null)
+        string? machineId = null)
     {
         try
         {
-            var query = _dbContext.Products
-                .Include(p => p.Machine)
-                .Include(p => p.Details)!
-                .ThenInclude(d => d.Detail)
-                .AsQueryable();
-
+            var query = _dbContext.Products.AsQueryable();
             if (startDate is not null)
                 query = query.Where(p => p.CreationDate >= startDate.Value);
-
             if (endDate is not null)
                 query = query.Where(p => p.CreationDate <= endDate.Value);
-
             if (machineId is not null)
                 query = query.Where(p => p.MachineId == machineId);
-
-            if (detailId is not null)
-                query = query.Where(p => p.Details!.Any(d => d.DetailId == detailId));
-
-            return query
-                .Select(p => _mapper.Map<ProductDataModel>(p))
-                .ToList();
+            return [..query.Select(p => _mapper.Map<ProductDataModel>(p))];
         }
         catch (Exception ex)
         {
@@ -63,8 +48,7 @@ internal class ProductStorageContract : IProductStorageContract
     {
         try
         {
-            var product = GetProductById(id);
-            return product != null ? _mapper.Map<ProductDataModel>(product) : null;
+            return _mapper.Map<ProductDataModel>(GetProductById(id));
         }
         catch (Exception ex)
         {
@@ -77,13 +61,7 @@ internal class ProductStorageContract : IProductStorageContract
     {
         try
         {
-            var product = _dbContext.Products
-                .Include(p => p.Machine)
-                .Include(p => p.Details)!
-                .ThenInclude(d => d.Detail)
-                .FirstOrDefault(p => p.Name == name);
-
-            return product != null ? _mapper.Map<ProductDataModel>(product) : null;
+            return _mapper.Map<ProductDataModel>(_dbContext.Products.FirstOrDefault(p => p.Name == name));
         }
         catch (Exception ex)
         {
@@ -96,8 +74,7 @@ internal class ProductStorageContract : IProductStorageContract
     {
         try
         {
-            var product = _mapper.Map<Product>(productDataModel);
-            _dbContext.Products.Add(product);
+            _dbContext.Products.Add(_mapper.Map<Product>(productDataModel));
             _dbContext.SaveChanges();
         }
         catch (InvalidOperationException ex) when (ex.TargetSite?.Name == "ThrowIdentityConflict")
@@ -118,8 +95,7 @@ internal class ProductStorageContract : IProductStorageContract
         {
             var existingProduct = GetProductById(productDataModel.Id)
                                   ?? throw new ElementNotFoundException(productDataModel.Id);
-
-            _mapper.Map(productDataModel, existingProduct);
+            _dbContext.Products.Update(_mapper.Map(productDataModel, existingProduct));
             _dbContext.SaveChanges();
         }
         catch (Exception ex) when (ex is ElementNotFoundException)
@@ -154,51 +130,5 @@ internal class ProductStorageContract : IProductStorageContract
         }
     }
 
-    public void AddDetailToProduct(string id, DetailProductDataModel detail)
-    {
-        try
-        {
-            var product = GetProductById(id) ?? throw new ElementNotFoundException(id);
-            product.Details!.Add(_mapper.Map<DetailProduct>(detail));
-            _dbContext.SaveChanges();
-        }
-        catch (Exception ex) when (ex is ElementNotFoundException)
-        {
-            _dbContext.ChangeTracker.Clear();
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _dbContext.ChangeTracker.Clear();
-            throw new StorageException(ex);
-        }
-    }
-
-    public void DelDetailFromProduct(string id, string detailId)
-    {
-        try
-        {
-            var product = GetProductById(id) ?? throw new ElementNotFoundException(id);
-            product.Details!
-                .Remove(product.Details.FirstOrDefault(y => y.DetailId == detailId)
-                        ?? throw new ElementNotFoundException(detailId));
-            _dbContext.SaveChanges();
-        }
-        catch (Exception ex) when (ex is ElementNotFoundException)
-        {
-            _dbContext.ChangeTracker.Clear();
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _dbContext.ChangeTracker.Clear();
-            throw new StorageException(ex);
-        }
-    }
-
-    private Product? GetProductById(string id) => _dbContext.Products
-        .Include(p => p.Machine)
-        .Include(p => p.Details)!
-        .ThenInclude(d => d.Detail)
-        .FirstOrDefault(p => p.Id == id);
+    private Product? GetProductById(string id) => _dbContext.Products.FirstOrDefault(p => p.Id == id);
 }

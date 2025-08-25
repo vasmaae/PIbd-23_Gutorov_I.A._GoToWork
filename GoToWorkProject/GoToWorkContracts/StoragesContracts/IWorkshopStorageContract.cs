@@ -4,9 +4,9 @@ namespace GoToWorkContracts.StoragesContracts;
 
 public interface IWorkshopStorageContract
 {
-    List<WorkshopDataModel> GetList(string? employeeId = null);
+    List<WorkshopDataModel> GetList(string? productionId = null);
     WorkshopDataModel? GetElementById(string id);
-    List<WorkshopDataModel> GetElementsByAddress(string address);
+    public WorkshopDataModel? GetElementByAddress(string address);
     void AddElement(WorkshopDataModel workshopDataModel);
     void UpdElement(WorkshopDataModel workshopDataModel);
     void DelElement(string id);

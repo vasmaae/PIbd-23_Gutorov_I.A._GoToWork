@@ -4,9 +4,9 @@ namespace GoToWorkContracts.StoragesContracts;
 
 public interface IMachineStorageContract
 {
-    List<MachineDataModel> GetList(string? employeeId = null);
+    List<MachineDataModel> GetList();
     MachineDataModel? GetElementById(string id);
-    List<MachineDataModel> GetElementsByModel(string model);
+    MachineDataModel? GetElementByModel(string model);
     void AddElement(MachineDataModel machineDataModel);
     void UpdElement(MachineDataModel machineDataModel);
     void DelElement(string id);
