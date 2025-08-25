@@ -17,10 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\GoToWorkBusinessLogic\GoToWorkBusinessLogic.csproj" />
       <ProjectReference Include="..\GoToWorkContracts\GoToWorkContracts.csproj" />
       <ProjectReference Include="..\GoToWorkDatabase\GoToWorkDatabase.csproj" />

@@ -5,7 +5,7 @@ namespace GoToWorkContracts.AdapterContracts;
 
 public interface IDetailAdapter
 {
-    DetailOperationResponse GetList(bool includeDeleted);
+    DetailOperationResponse GetList();
     DetailOperationResponse GetElementsByCreationDate(DateTime? from = null, DateTime? to = null);
     DetailOperationResponse GetElement(string data);
     DetailOperationResponse RegisterDetail(DetailBindingModel detailModel);

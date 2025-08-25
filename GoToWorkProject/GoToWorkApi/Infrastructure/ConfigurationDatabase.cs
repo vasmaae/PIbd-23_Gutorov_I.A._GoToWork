@@ -8,5 +8,5 @@ public class ConfigurationDatabase(IConfiguration configuration) : IConfiguratio
         configuration.GetValue<DatabaseSettings>("DatabaseSettings")
         ?? throw new InvalidDataException(nameof(DatabaseSettings)));
 
-    public string ConnectionString => "";
+    public string ConnectionString => _settings.Value.ConnectionString;
 }

@@ -1,0 +1,71 @@
+// Тема: "Завод «Иди работать»"
+// Роль: Исполнитель
+
+// Класс контекста базы данных
+class FactoryDbContext : DbContext
+{
+    public DbSet<Detail> Details { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<Production> Productions { get; set; }
+    public DbSet<Workshop> Workshops { get; set; }
+    public DbSet<Machine> Machines { get; set; }
+}
+
+FactoryDbContext _context;
+
+// 1. Получение всех деталей (сущность 7)
+// Извлечение всех деталей, созданных пользователем, включая связанные изделия и производства
+_context.Details
+    .Where(d => d.CreatedBy == currentUserId)
+    .Include(d => d.DetailsProducts)
+        .ThenInclude(dp => dp.Product)
+    .Include(d => d.DetailsProductions)
+        .ThenInclude(dp => dp.Production);
+
+// 2. Получение всех изделий (сущность 8)
+// Извлечение всех изделий, созданных пользователем, с связанными деталями
+_context.Products
+    .Where(p => p.CreatedBy == currentUserId)
+    .Include(p => p.DetailsProducts)
+        .ThenInclude(dp => dp.Detail);
+
+// 3. Получение всех производств (сущность 9)
+// Извлечение всех производств, созданных пользователем, включая связанные детали и цеха
+_context.Productions
+    .Where(p => p.CreatedBy == currentUserId)
+    .Include(p => p.DetailsProductions)
+        .ThenInclude(dp => dp.Detail)
+    .Include(p => p.ProductionWorkshops)
+        .ThenInclude(pw => pw.Workshop);
+
+// 4. Получение списка цехов по выбранным деталям (сущность 12 на основе сущности 7)
+// Генерация списка цехов, связанных с производствами, использующих выбранные детали
+_context.Workshops
+    .Where(w => w.ProductionWorkshops.Any(pw => pw.Production.DetailsProductions.Any(dp => selectedDetailIds.Contains(dp.DetailId))))
+    .Select(w => new {
+        WorkshopId = w.Id,
+        WorkshopName = w.Name
+    });
+
+// 5. Получение отчета по деталям за период
+// Генерация отчета по деталям за указанный период, включая производства и станки
+_context.Details
+    .Where(d => d.CreatedBy == currentUserId && d.DateCreated >= startDate && d.DateCreated <= endDate)
+    .Include(d => d.DetailsProductions)
+        .ThenInclude(dp => dp.Production)
+    .Include(d => d.DetailsProducts)
+        .ThenInclude(dp => dp.Product)
+            .ThenInclude(p => p.MachineProducts)
+                .ThenInclude(mp => mp.Machine)
+    .Select(d => new {
+        DetailId = d.Id,
+        DetailName = d.Name,
+        Productions = d.DetailsProductions.Select(dp => new {
+            ProductionId = dp.Production.Id,
+            ProductionName = dp.Production.Name
+        }),
+        Machines = d.DetailsProducts.SelectMany(dp => dp.Product.MachineProducts.Select(mp => new {
+            MachineId = mp.Machine.Id,
+            MachineName = mp.Machine.Name
+        }))
+    });

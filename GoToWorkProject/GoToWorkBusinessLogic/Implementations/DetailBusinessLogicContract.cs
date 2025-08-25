@@ -18,10 +18,10 @@ internal class DetailBusinessLogicContract(
         return detailStorageContract.GetList() ?? throw new NullListException();
     }
 
-    public List<DetailDataModel> GetDetailsByCreationDate(DateTime from, DateTime to)
+    public List<DetailDataModel> GetDetailsByCreationDate(DateTime? from = null, DateTime? to = null)
     {
         logger.LogInformation("Getting details by creation date from {from} to {to}", from, to);
-        if (from > to) throw new IncorrectDatesException(from, to);
+        if (from > to) throw new IncorrectDatesException((DateTime)from, (DateTime)to);
         return detailStorageContract.GetList(from, to) ?? throw new NullListException();
     }
 
