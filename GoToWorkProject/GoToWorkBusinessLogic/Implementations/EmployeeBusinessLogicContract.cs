@@ -12,10 +12,10 @@ internal class EmployeeBusinessLogicContract(
     IEmployeeStorageContract employeeStorageContract,
     ILogger logger) : IEmployeeBusinessLogicContract
 {
-    public List<EmployeeDataModel> GetAllEmployees(bool onlyActive = true)
+    public List<EmployeeDataModel> GetAllEmployees()
     {
-        logger.LogInformation("Getting all employees (onlyActive: {onlyActive})", onlyActive);
-        return employeeStorageContract.GetList(onlyActive: onlyActive)
+        logger.LogInformation("Getting all employees");
+        return employeeStorageContract.GetList()
                ?? [];
     }
 
@@ -24,10 +24,8 @@ internal class EmployeeBusinessLogicContract(
         logger.LogInformation("Getting employee by id: {data}", data);
         if (data.IsEmpty()) throw new ArgumentNullException(nameof(data));
         if (data.IsGuid())
-            return employeeStorageContract.GetElementById(data)
-                   ?? throw new ElementNotFoundException(data);
-        return employeeStorageContract.GetElementsByFullName(data).FirstOrDefault()
-               ?? throw new NullListException();
+            return employeeStorageContract.GetElementById(data) ?? throw new ElementNotFoundException(data);
+        throw new ElementNotFoundException(data);
     }
 
     public void InsertEmployee(EmployeeDataModel employee)
@@ -52,13 +50,5 @@ internal class EmployeeBusinessLogicContract(
         if (id.IsEmpty()) throw new ArgumentNullException(nameof(id));
         if (!id.IsGuid()) throw new ValidationException("Id is not a unique identifier");
         employeeStorageContract.DelElement(id);
-    }
-
-    public void RestoreEmployee(string id)
-    {
-        logger.LogInformation("Restoring employee with id: {id}", id);
-        if (id.IsEmpty()) throw new ArgumentNullException(nameof(id));
-        if (!id.IsGuid()) throw new ValidationException("Id is not a unique identifier");
-        employeeStorageContract.ResElement(id);
     }
 }

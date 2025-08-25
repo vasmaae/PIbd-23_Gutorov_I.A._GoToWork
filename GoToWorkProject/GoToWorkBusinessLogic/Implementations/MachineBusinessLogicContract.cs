@@ -18,23 +18,13 @@ internal class MachineBusinessLogicContract(
         return machineStorageContract.GetList() ?? throw new NullListException();
     }
 
-    public List<MachineDataModel> GetMachinesByEmployee(string employeeId)
-    {
-        logger.LogInformation("Getting machines by employee: {employeeId}", employeeId);
-        if (employeeId.IsEmpty()) throw new ArgumentNullException(nameof(employeeId));
-        if (!employeeId.IsGuid()) throw new ValidationException("EmployeeId is not a unique identifier");
-        return machineStorageContract.GetList(employeeId) ?? throw new NullListException();
-    }
-
     public MachineDataModel GetMachineByData(string data)
     {
         logger.LogInformation("Getting machine by data: {data}", data);
         if (data.IsEmpty()) throw new ArgumentNullException(nameof(data));
         if (data.IsGuid())
-            return machineStorageContract.GetElementById(data)
-                   ?? throw new ElementNotFoundException(data);
-        return machineStorageContract.GetElementsByModel(data).FirstOrDefault()
-               ?? throw new NullListException();
+            return machineStorageContract.GetElementById(data) ?? throw new ElementNotFoundException(data);
+        return machineStorageContract.GetElementByModel(data) ?? throw new ElementNotFoundException(data);
     }
 
     public void InsertMachine(MachineDataModel machine)

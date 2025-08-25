@@ -33,21 +33,12 @@ internal class ProductBusinessLogicContract(
         return productStorageContract.GetList(from, to) ?? throw new NullListException();
     }
 
-    public List<ProductDataModel> GetProductsByDetail(string detailId)
-    {
-        logger.LogInformation("Getting products by detail: {detailId}", detailId);
-        if (detailId.IsEmpty()) throw new ArgumentNullException(nameof(detailId));
-        if (!detailId.IsGuid()) throw new ValidationException("DetailId is not a unique identifier");
-        return productStorageContract.GetList(detailId: detailId) ?? throw new NullListException();
-    }
-
-    public ProductDataModel? GetProductByData(string data)
+    public ProductDataModel GetProductByData(string data)
     {
         logger.LogInformation("Getting product by data: {data}", data);
         if (data.IsEmpty()) throw new ArgumentNullException(nameof(data));
         if (data.IsGuid())
-            return productStorageContract.GetElementById(data)
-                   ?? throw new ElementNotFoundException(data);
+            return productStorageContract.GetElementById(data) ?? throw new ElementNotFoundException(data);
         return productStorageContract.GetElementByName(data) ?? throw new ElementNotFoundException(data);
     }
 
@@ -73,32 +64,5 @@ internal class ProductBusinessLogicContract(
         if (id.IsEmpty()) throw new ArgumentNullException(nameof(id));
         if (!id.IsGuid()) throw new ValidationException("Id is not a unique identifier");
         productStorageContract.DelElement(id);
-    }
-
-    public void AddDetailToProduct(string productId, DetailProductDataModel detail)
-    {
-        logger.LogInformation("Adding detail to product with id: {id}", productId);
-        if (productId.IsEmpty()) throw new ArgumentNullException(nameof(productId));
-        if (!productId.IsGuid()) throw new ValidationException("Id is not a unique identifier");
-        var product = productStorageContract.GetElementById(productId);
-    }
-
-    public void RemoveDetailFromProduct(string productId, string detailId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public ProductDataModel GetProductById(string id)
-    {
-        if (id.IsEmpty()) throw new ArgumentNullException(nameof(id));
-        if (!id.IsGuid()) throw new ValidationException("Id is not a unique identifier");
-        return productStorageContract.GetElementById(id) ?? throw new ElementNotFoundException(id);
-    }
-
-    public ProductDataModel GetProductByName(string name)
-    {
-        logger.LogInformation("Getting product by name: {name}", name);
-        if (name.IsEmpty()) throw new ArgumentNullException(nameof(name));
-        return productStorageContract.GetElementByName(name) ?? throw new ElementNotFoundException(name);
     }
 }

@@ -5,7 +5,6 @@ namespace GoToWorkContracts.BusinessLogicContracts;
 public interface IWorkshopBusinessLogicContract
 {
     List<WorkshopDataModel> GetAllWorkshops();
-    List<WorkshopDataModel> GetWorkshopsByEmployee(string employeeId);
     List<WorkshopDataModel> GetWorkshopsByProduction(string productionId);
     WorkshopDataModel GetWorkshopByData(string data);
     void InsertWorkshop(WorkshopDataModel workshop);

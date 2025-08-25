@@ -13,11 +13,10 @@ internal class UserBusinessLogicContract(
     IUserStorageContract userStorageContract,
     ILogger logger) : IUserBusinessLogicContract
 {
-    public List<UserDataModel> GetAllUsers(bool onlyActive = true)
+    public List<UserDataModel> GetAllUsers()
     {
-        logger.LogInformation("Getting all users (onlyActive: {onlyActive})", onlyActive);
-        return userStorageContract.GetList(onlyActive) 
-               ?? throw new NullListException();
+        logger.LogInformation("Getting all users");
+        return userStorageContract.GetList() ?? throw new NullListException();
     }
 
     public UserDataModel GetUserByData(string data)
@@ -25,13 +24,10 @@ internal class UserBusinessLogicContract(
         logger.LogInformation("Getting user by data: {data}", data);
         if (data.IsEmpty()) throw new ArgumentNullException(nameof(data));
         if (data.IsGuid())
-            return userStorageContract.GetElementById(data)
-                   ?? throw new ElementNotFoundException(data);
+            return userStorageContract.GetElementById(data) ?? throw new ElementNotFoundException(data);
         if (RegexExtensions.EmailRegex().IsMatch(data))
-            return userStorageContract.GetElementByEmail(data)
-                   ?? throw new ElementNotFoundException(data);
-        return userStorageContract.GetElementByLogin(data)
-               ?? throw new ElementNotFoundException(data);
+            return userStorageContract.GetElementByEmail(data) ?? throw new ElementNotFoundException(data);
+        return userStorageContract.GetElementByLogin(data) ?? throw new ElementNotFoundException(data);
     }
 
     public void InsertUser(UserDataModel user)
@@ -56,13 +52,5 @@ internal class UserBusinessLogicContract(
         if (id.IsEmpty()) throw new ArgumentNullException(nameof(id));
         if (!id.IsGuid()) throw new ValidationException("Id is not a unique identifier");
         userStorageContract.DelElement(id);
-    }
-
-    public void RestoreUser(string id)
-    {
-        logger.LogInformation("Restoring user with id: {id}", id);
-        if (id.IsEmpty()) throw new ArgumentNullException(nameof(id));
-        if (!id.IsGuid()) throw new ValidationException("Id is not a unique identifier");
-        userStorageContract.ResElement(id);
     }
 }

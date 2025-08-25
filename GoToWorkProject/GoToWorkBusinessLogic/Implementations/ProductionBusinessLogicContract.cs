@@ -17,33 +17,14 @@ internal class ProductionBusinessLogicContract(
         logger.LogInformation("Getting all productions");
         return productionStorageContract.GetList() ?? throw new NullListException();
     }
-
-    public List<ProductionDataModel> GetProductionsByWorkshop(string workshopId)
-    {
-        logger.LogInformation("Getting productions by workshop: {workshopId}", workshopId);
-        if (workshopId.IsEmpty()) throw new ArgumentNullException(nameof(workshopId));
-        if (!workshopId.IsGuid()) throw new ValidationException("WorkshopId is not a unique identifier");
-        return productionStorageContract.GetList(workshopId)
-               ?? throw new NullListException();
-    }
-
-    public List<ProductionDataModel> GetProductionsByDetail(string detailId)
-    {
-        logger.LogInformation("Getting productions by detail: {detailId}", detailId);
-        if (detailId.IsEmpty()) throw new ArgumentNullException(nameof(detailId));
-        if (!detailId.IsGuid()) throw new ValidationException("DetailId is not a unique identifier");
-        return productionStorageContract.GetList(detailId: detailId)
-               ?? throw new NullListException();
-    }
-
-    public ProductionDataModel? GetProductionByData(string data)
+    
+    public ProductionDataModel GetProductionByData(string data)
     {
         logger.LogInformation("Getting production by data: {data}", data);
         if (data.IsEmpty()) throw new ArgumentNullException(nameof(data));
         if (data.IsGuid())
-            return productionStorageContract.GetElementById(data)
-                   ?? throw new ElementNotFoundException(data);
-        throw new NullListException();
+            return productionStorageContract.GetElementById(data) ?? throw new ElementNotFoundException(data);
+        throw new ElementNotFoundException(data);
     }
 
     public void InsertProduction(ProductionDataModel production)

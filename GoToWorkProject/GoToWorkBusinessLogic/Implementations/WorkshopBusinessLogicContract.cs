@@ -18,14 +18,6 @@ internal class WorkshopBusinessLogicContract(
         return workshopStorageContract.GetList() ?? throw new NullListException();
     }
 
-    public List<WorkshopDataModel> GetWorkshopsByEmployee(string employeeId)
-    {
-        logger.LogInformation("Getting workshops by employee ID: {employeeId}", employeeId);
-        if (employeeId.IsEmpty()) throw new ArgumentNullException(nameof(employeeId));
-        if (!employeeId.IsGuid()) throw new ValidationException("EmployeeId is not a unique identifier");
-        return workshopStorageContract.GetList(employeeId) ?? throw new NullListException();
-    }
-
     public List<WorkshopDataModel> GetWorkshopsByProduction(string productionId)
     {
         logger.LogInformation("Getting workshops by production ID: {productionId}", productionId);
@@ -39,10 +31,8 @@ internal class WorkshopBusinessLogicContract(
         logger.LogInformation("Getting workshop by data: {data}", data);
         if (data.IsEmpty()) throw new ArgumentNullException(nameof(data));
         if (data.IsGuid())
-            return workshopStorageContract.GetElementById(data)
-                   ?? throw new ElementNotFoundException(data);
-        return workshopStorageContract.GetElementsByAddress(data).FirstOrDefault()
-               ?? throw new ElementNotFoundException(data);
+            return workshopStorageContract.GetElementById(data) ?? throw new ElementNotFoundException(data);
+        return workshopStorageContract.GetElementByAddress(data) ?? throw new ElementNotFoundException(data);
     }
 
     public void InsertWorkshop(WorkshopDataModel workshop)
