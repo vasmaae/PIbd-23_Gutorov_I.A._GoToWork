@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace GoToWorkBusinessLogic.Implementations;
 
-internal class ProductionBusinessLogicContract(
+public class ProductionBusinessLogicContract(
     IProductionStorageContract productionStorageContract,
     ILogger logger) : IProductionBusinessLogicContract
 {

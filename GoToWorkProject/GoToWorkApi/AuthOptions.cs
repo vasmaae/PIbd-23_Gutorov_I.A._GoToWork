@@ -9,6 +9,8 @@ public static class AuthOptions
     public const string Audience = "GoToWorkAuthClient";
     private const string Key = "GoToWorkCourseWorkAuthenticationSecretKey";
 
-    public static SymmetricSecurityKey GetSymmetricSecurityKey() =>
-        new(Encoding.UTF8.GetBytes(Key));
+    public static SymmetricSecurityKey GetSymmetricSecurityKey()
+    {
+        return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
+    }
 }

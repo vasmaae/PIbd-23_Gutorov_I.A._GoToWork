@@ -10,4 +10,6 @@ public interface IUserAdapter
     UserOperationResponse CreateUser(UserBindingModel userModel);
     UserOperationResponse UpdateUser(UserBindingModel userModel);
     UserOperationResponse DeleteUser(string id);
+    UserOperationResponse Register(UserRegisterBindingModel model);
+    AuthOperationResponse Login(UserLoginBindingModel model);
 }
