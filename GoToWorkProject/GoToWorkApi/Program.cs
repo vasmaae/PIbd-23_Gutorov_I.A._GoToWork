@@ -1,12 +1,15 @@
 using GoToWorkApi;
 using GoToWorkApi.Adapters;
+using GoToWorkApi.Infrastructure;
+using GoToWorkBusinessLogic.Implementations;
 using GoToWorkContracts.AdapterContracts;
 using GoToWorkContracts.BusinessLogicContracts;
+using GoToWorkContracts.Infrastructure;
 using GoToWorkContracts.StoragesContracts;
-using GoToWorkBusinessLogic.Implementations;
 using GoToWorkDatabase;
 using GoToWorkDatabase.Implementations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -21,6 +24,7 @@ loggerFactory.AddSerilog(new LoggerConfiguration().ReadFrom.Configuration(builde
 builder.Services.AddSingleton(loggerFactory.CreateLogger("Any"));
 
 // DbContext
+builder.Services.AddSingleton<IConfigurationDatabase, ConfigurationDatabase>();
 builder.Services.AddDbContext<GoToWorkDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -76,10 +80,7 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+if (app.Environment.IsDevelopment()) app.MapOpenApi();
 
 if (app.Environment.IsProduction())
 {
@@ -87,11 +88,19 @@ if (app.Environment.IsProduction())
     var dbContext = scope.ServiceProvider.GetRequiredService<GoToWorkDbContext>();
     if (dbContext.Database.CanConnect())
     {
+        dbContext.Database.EnsureCreated();
         dbContext.Database.Migrate();
     }
 }
 
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
+
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    HttpOnly = HttpOnlyPolicy.Always,
+    Secure = app.Environment.IsProduction() ? CookieSecurePolicy.Always : CookieSecurePolicy.None
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

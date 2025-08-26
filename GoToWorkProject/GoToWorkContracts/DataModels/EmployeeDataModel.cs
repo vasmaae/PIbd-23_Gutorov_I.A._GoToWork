@@ -4,13 +4,18 @@ using GoToWorkContracts.Infrastructure;
 
 namespace GoToWorkContracts.DataModels;
 
-public class EmployeeDataModel(
-    string id,
-    string fullName)
-    : IValidation
+public class EmployeeDataModel : IValidation
 {
-    public string Id { get; } = id;
-    public string FullName { get; } = fullName;
+    public string Id { get; set; }
+    public string FullName { get; set; }
+
+    public EmployeeDataModel() { }
+
+    public EmployeeDataModel(string id, string fullName)
+    {
+        Id = id;
+        FullName = fullName;
+    }
 
     public void Validate()
     {

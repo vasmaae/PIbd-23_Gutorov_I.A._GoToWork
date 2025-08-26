@@ -1,9 +1,11 @@
-namespace GoToWorkContracts.BindingModels
+using GoToWorkContracts.Enums;
+
+namespace GoToWorkContracts.BindingModels;
+
+public class UserRegisterBindingModel
 {
-    public class UserRegisterBindingModel
-    {
-        public string Login { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-    }
+    public string? Login { get; set; }
+    public string? Email { get; set; }
+    public string? Password { get; set; }
+    public UserRole Role { get; set; }
 }

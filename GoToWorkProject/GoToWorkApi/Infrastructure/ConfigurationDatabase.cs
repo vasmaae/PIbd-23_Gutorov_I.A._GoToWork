@@ -8,5 +8,5 @@ public class ConfigurationDatabase(IConfiguration configuration) : IConfiguratio
         configuration.GetValue<DatabaseSettings>("DatabaseSettings")
         ?? throw new InvalidDataException(nameof(DatabaseSettings)));
 
-    public string ConnectionString => _settings.Value.ConnectionString;
+    public string ConnectionString => "Host=127.0.0.1;Port=5432;Database=GoToWork;Username=postgres;Password=postgres;";
 }

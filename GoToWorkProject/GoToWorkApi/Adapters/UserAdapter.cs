@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using AutoMapper;
 using GoToWorkContracts.AdapterContracts;
 using GoToWorkContracts.AdapterContracts.OperationResponses;
@@ -7,8 +9,6 @@ using GoToWorkContracts.DataModels;
 using GoToWorkContracts.Exceptions;
 using GoToWorkContracts.ViewModels;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace GoToWorkApi.Adapters;
 
@@ -233,22 +233,21 @@ public class UserAdapter : IUserAdapter
         try
         {
             var user = _userBusinessLogic.Login(model.Login, model.Password);
-            if (user == null)
-            {
-                return AuthOperationResponse.Unauthorized("Invalid login or password");
-            }
+            if (user == null) return AuthOperationResponse.Unauthorized("Invalid login or password");
 
-            var claims = new List<Claim> {
+            var claims = new List<Claim>
+            {
                 new(ClaimsIdentity.DefaultNameClaimType, user.Value.login),
                 new(ClaimsIdentity.DefaultRoleClaimType, user.Value.role.ToString()),
                 new("id", user.Value.id)
             };
             var jwt = new JwtSecurityToken(
-                    issuer: AuthOptions.Issuer,
-                    audience: AuthOptions.Audience,
-                    claims: claims,
-                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(60)),
-                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+                AuthOptions.Issuer,
+                AuthOptions.Audience,
+                claims,
+                expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(60)),
+                signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(),
+                    SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
             var tokenModel = new TokenViewModel { Token = encodedJwt };
 

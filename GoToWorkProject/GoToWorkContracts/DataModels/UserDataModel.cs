@@ -6,18 +6,24 @@ using GoToWorkContracts.Infrastructure;
 
 namespace GoToWorkContracts.DataModels;
 
-public class UserDataModel(
-    string id,
-    string login,
-    string email,
-    string password,
-    UserRole role) : IValidation
+public class UserDataModel : IValidation
 {
-    public string Id { get; } = id;
-    public string Login { get; } = login;
-    public string Email { get; } = email;
-    public string Password { get; } = password;
-    public UserRole Role { get; } = role;
+    public string Id { get; set; }
+    public string Login { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public UserRole Role { get; set; }
+
+    public UserDataModel() { }
+
+    public UserDataModel(string id, string login, string email, string password, UserRole role)
+    {
+        Id = id;
+        Login = login;
+        Email = email;
+        Password = password;
+        Role = role;
+    }
 
     public void Validate()
     {

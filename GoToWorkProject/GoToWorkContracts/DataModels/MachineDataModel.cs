@@ -5,16 +5,22 @@ using GoToWorkContracts.Infrastructure;
 
 namespace GoToWorkContracts.DataModels;
 
-public class MachineDataModel(
-    string id,
-    string model,
-    MachineType type,
-    List<EmployeeMachineDataModel> employees) : IValidation
+public class MachineDataModel : IValidation
 {
-    public string Id { get; set; } = id;
-    public string Model { get; set; } = model;
-    public MachineType Type { get; set; } = type;
-    public List<EmployeeMachineDataModel>? Employees { get; set; } = employees;
+    public string Id { get; set; }
+    public string Model { get; set; }
+    public MachineType Type { get; set; }
+    public List<EmployeeMachineDataModel>? Employees { get; set; }
+
+    public MachineDataModel() { }
+
+    public MachineDataModel(string id, string model, MachineType type, List<EmployeeMachineDataModel> employees)
+    {
+        Id = id;
+        Model = model;
+        Type = type;
+        Employees = employees;
+    }
 
     public void Validate()
     {

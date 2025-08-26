@@ -5,17 +5,22 @@ using GoToWorkContracts.Infrastructure;
 
 namespace GoToWorkContracts.DataModels;
 
-public class DetailDataModel(
-    string id,
-    string name,
-    MaterialType material,
-    DateTime creationDate)
-    : IValidation
+public class DetailDataModel : IValidation
 {
-    public string Id { get; } = id;
-    public string Name { get; } = name;
-    public MaterialType Material { get; } = material;
-    public DateTime CreationDate { get; } = creationDate.ToUniversalTime();
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public MaterialType Material { get; set; }
+    public DateTime CreationDate { get; set; }
+
+    public DetailDataModel() { }
+
+    public DetailDataModel(string id, string name, MaterialType material, DateTime creationDate)
+    {
+        Id = id;
+        Name = name;
+        Material = material;
+        CreationDate = creationDate.ToUniversalTime();
+    }
 
     public void Validate()
     {

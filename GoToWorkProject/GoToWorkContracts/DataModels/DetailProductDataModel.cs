@@ -4,19 +4,24 @@ using GoToWorkContracts.Infrastructure;
 
 namespace GoToWorkContracts.DataModels;
 
-public class DetailProductDataModel(
-    string productId,
-    string detailId,
-    int quantity)
-    : IValidation
+public class DetailProductDataModel : IValidation
 {
-    public string ProductId { get; set; } = productId;
-    public string DetailId { get; set; } = detailId;
-    public int Quantity { get; set; } = quantity;
-    private readonly ProductDataModel? _product;
-    private readonly DetailDataModel? _detail;
+    public string ProductId { get; set; }
+    public string DetailId { get; set; }
+    public int Quantity { get; set; }
+    private ProductDataModel? _product;
+    private DetailDataModel? _detail;
     public string DetailName => _detail?.Name ?? string.Empty;
     public string ProductName => _product?.Name ?? string.Empty;
+
+    public DetailProductDataModel() { }
+
+    public DetailProductDataModel(string productId, string detailId, int quantity)
+    {
+        ProductId = productId;
+        DetailId = detailId;
+        Quantity = quantity;
+    }
 
     public DetailProductDataModel(string productId, string detailId, int quantity, DetailDataModel? detail,
         ProductDataModel? product) : this(productId, detailId, quantity)

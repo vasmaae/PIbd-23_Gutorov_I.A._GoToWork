@@ -6,7 +6,6 @@ using GoToWorkContracts.Exceptions;
 using GoToWorkContracts.Extensions;
 using GoToWorkContracts.StoragesContracts;
 using Microsoft.Extensions.Logging;
-
 using System.Security.Cryptography;
 using System.Text;
 using GoToWorkContracts.Enums;
@@ -63,10 +62,12 @@ public class UserBusinessLogicContract(
         logger.LogInformation("Registering new user: {json}", JsonSerializer.Serialize(model));
         ArgumentNullException.ThrowIfNull(model);
 
-        var user = new UserDataModel(Guid.NewGuid().ToString(), model.Login, model.Email, HashPassword(model.Password), model.Role);
+        var user = new UserDataModel(Guid.NewGuid().ToString(), model.Login, model.Email, model.Password, model.Role);
         user.Validate();
+        user.Password = HashPassword(model.Password);
 
-        if (userStorageContract.GetElementByLogin(user.Login) != null || userStorageContract.GetElementByEmail(user.Email) != null)
+        if (userStorageContract.GetElementByLogin(user.Login) != null ||
+            userStorageContract.GetElementByEmail(user.Email) != null)
         {
             throw new ElementExistsException(nameof(user.Login), user.Login);
         }
@@ -78,9 +79,9 @@ public class UserBusinessLogicContract(
     public (string id, string login, UserRole role)? Login(string loginOrEmail, string password)
     {
         logger.LogInformation("User login attempt: {login}", loginOrEmail);
-        var user = RegexExtensions.EmailRegex().IsMatch(loginOrEmail) ? 
-            userStorageContract.GetElementByEmail(loginOrEmail) : 
-            userStorageContract.GetElementByLogin(loginOrEmail);
+        var user = RegexExtensions.EmailRegex().IsMatch(loginOrEmail)
+            ? userStorageContract.GetElementByEmail(loginOrEmail)
+            : userStorageContract.GetElementByLogin(loginOrEmail);
 
         if (user == null)
         {

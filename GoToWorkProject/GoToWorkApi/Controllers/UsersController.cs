@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GoToWorkApi.Controllers;
 
 [Authorize]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 [Produces("application/json")]
 public class UsersController : ControllerBase
@@ -29,8 +29,6 @@ public class UsersController : ControllerBase
     {
         return _adapter.GetElement(data).GetResponse(Request, Response);
     }
-
-    
 
     [HttpPut]
     public IActionResult Update([FromBody] UserBindingModel model)

@@ -4,20 +4,26 @@ using GoToWorkContracts.Infrastructure;
 
 namespace GoToWorkContracts.DataModels;
 
-public class ProductDataModel(
-    string id,
-    string? machineId,
-    string name,
-    DateTime creationDate,
-    List<DetailProductDataModel> details) : IValidation
+public class ProductDataModel : IValidation
 {
-    public string Id { get; } = id;
-    public string? MachineId { get; } = machineId;
-    public string Name { get; } = name;
-    public DateTime CreationDate { get; set; } = creationDate;
-    public List<DetailProductDataModel>? Details { get; set; } = details;
-    private readonly MachineDataModel? _machine;
+    public string Id { get; set; }
+    public string? MachineId { get; set; }
+    public string Name { get; set; }
+    public DateTime CreationDate { get; set; }
+    public List<DetailProductDataModel>? Details { get; set; }
+    private MachineDataModel? _machine;
     public string MachineName => _machine?.Model ?? string.Empty;
+
+    public ProductDataModel() { }
+
+    public ProductDataModel(string id, string? machineId, string name, DateTime creationDate, List<DetailProductDataModel> details)
+    {
+        Id = id;
+        MachineId = machineId;
+        Name = name;
+        CreationDate = creationDate;
+        Details = details;
+    }
 
     public ProductDataModel(string id, string? machineId, string name, DateTime creationDate,
         List<DetailProductDataModel> details, MachineDataModel? machine) : this(id, machineId, name, creationDate,

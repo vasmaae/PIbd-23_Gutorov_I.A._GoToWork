@@ -5,17 +5,22 @@ using GoToWorkContracts.Infrastructure;
 
 namespace GoToWorkContracts.DataModels;
 
-public class DetailProductionDataModel(
-    string detailId,
-    string productionId)
-    : IValidation
+public class DetailProductionDataModel : IValidation
 {
-    public string DetailId { get; } = detailId;
-    public string ProductionId { get; } = productionId;
-    private readonly DetailDataModel? _detail;
-    private readonly ProductionDataModel? _production;
+    public string DetailId { get; set; }
+    public string ProductionId { get; set; }
+    private DetailDataModel? _detail;
+    private ProductionDataModel? _production;
     public string DetailName => _detail?.Name ?? string.Empty;
     public string ProductionName => _production?.Name ?? string.Empty;
+
+    public DetailProductionDataModel() { }
+
+    public DetailProductionDataModel(string detailId, string productionId)
+    {
+        DetailId = detailId;
+        ProductionId = productionId;
+    }
 
     public DetailProductionDataModel(string detailId, string productionId, DetailDataModel? detail,
         ProductionDataModel? production) : this(detailId, productionId)

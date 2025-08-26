@@ -1,10 +1,7 @@
-using System;
+namespace GoToWorkContracts.BindingModels;
 
-namespace GoToWorkContracts.BindingModels
+public class ReportBindingModel
 {
-    public class ReportBindingModel
-    {
-        public DateTime? DateFrom { get; set; }
-        public DateTime? DateTo { get; set; }
-    }
+    public DateTime? DateFrom { get; set; }
+    public DateTime? DateTo { get; set; }
 }

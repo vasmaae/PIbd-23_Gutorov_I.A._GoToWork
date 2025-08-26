@@ -4,14 +4,20 @@ using GoToWorkContracts.Infrastructure;
 
 namespace GoToWorkContracts.DataModels;
 
-public class ProductionDataModel(
-    string id,
-    string name,
-    List<DetailProductionDataModel> details) : IValidation
+public class ProductionDataModel : IValidation
 {
-    public string Id { get; } = id;
-    public string Name { get; } = name;
-    public List<DetailProductionDataModel>? Details { get; } = details;
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public List<DetailProductionDataModel>? Details { get; set; }
+
+    public ProductionDataModel() { }
+
+    public ProductionDataModel(string id, string name, List<DetailProductionDataModel> details)
+    {
+        Id = id;
+        Name = name;
+        Details = details;
+    }
     
     public void Validate()
     {

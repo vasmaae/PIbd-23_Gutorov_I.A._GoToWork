@@ -4,17 +4,22 @@ using GoToWorkContracts.Infrastructure;
 
 namespace GoToWorkContracts.DataModels;
 
-public class EmployeeMachineDataModel(
-    string employeeId,
-    string machineId)
-    : IValidation
+public class EmployeeMachineDataModel : IValidation
 {
-    public string EmployeeId { get; set; } = employeeId;
-    public string MachineId { get; set; } = machineId;
-    private readonly EmployeeDataModel? _employee;
-    private readonly MachineDataModel? _machine;
+    public string EmployeeId { get; set; }
+    public string MachineId { get; set; }
+    private EmployeeDataModel? _employee;
+    private MachineDataModel? _machine;
     public string EmployeeName => _employee?.FullName ?? string.Empty;
     public string MachineName => _machine?.Model ?? string.Empty;
+
+    public EmployeeMachineDataModel() { }
+
+    public EmployeeMachineDataModel(string employeeId, string machineId)
+    {
+        EmployeeId = employeeId;
+        MachineId = machineId;
+    }
 
     public EmployeeMachineDataModel(string employeeId, string machineId, EmployeeDataModel employee,
         MachineDataModel machine) : this(employeeId, machineId)
