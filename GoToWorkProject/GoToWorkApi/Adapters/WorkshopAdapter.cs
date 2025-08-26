@@ -19,12 +19,13 @@ public class WorkshopAdapter : IWorkshopAdapter
     {
         _workshopBusinessLogic = workshopBusinessLogic;
         _logger = logger;
-
         var config = new MapperConfiguration(cfg =>
         {
             cfg.CreateMap<WorkshopBindingModel, WorkshopDataModel>();
-            cfg.CreateMap<EmployeeWorkshopBindingModel, EmployeeWorkshopDataModel>();
             cfg.CreateMap<WorkshopDataModel, WorkshopViewModel>();
+            cfg.CreateMap<EmployeeBindingModel, EmployeeDataModel>();
+            cfg.CreateMap<EmployeeDataModel, EmployeeViewModel>();
+            cfg.CreateMap<EmployeeWorkshopBindingModel, EmployeeWorkshopDataModel>();
             cfg.CreateMap<EmployeeWorkshopDataModel, EmployeeWorkshopViewModel>();
         });
         _mapper = new Mapper(config);
@@ -123,6 +124,7 @@ public class WorkshopAdapter : IWorkshopAdapter
     {
         try
         {
+            workshopModel.Id = Guid.NewGuid().ToString();
             _workshopBusinessLogic.InsertWorkshop(_mapper.Map<WorkshopDataModel>(workshopModel));
             return WorkshopOperationResponse.NoContent();
         }

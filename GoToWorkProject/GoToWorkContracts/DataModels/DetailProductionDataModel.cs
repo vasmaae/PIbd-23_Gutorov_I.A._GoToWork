@@ -1,4 +1,3 @@
-using GoToWorkContracts.Enums;
 using GoToWorkContracts.Exceptions;
 using GoToWorkContracts.Extensions;
 using GoToWorkContracts.Infrastructure;
@@ -9,12 +8,10 @@ public class DetailProductionDataModel : IValidation
 {
     public string DetailId { get; set; }
     public string ProductionId { get; set; }
-    private DetailDataModel? _detail;
-    private ProductionDataModel? _production;
     public string DetailName => _detail?.Name ?? string.Empty;
     public string ProductionName => _production?.Name ?? string.Empty;
-
-    public DetailProductionDataModel() { }
+    private readonly DetailDataModel? _detail;
+    private readonly ProductionDataModel? _production;
 
     public DetailProductionDataModel(string detailId, string productionId)
     {
@@ -27,6 +24,10 @@ public class DetailProductionDataModel : IValidation
     {
         _detail = detail;
         _production = production;
+    }
+
+    public DetailProductionDataModel()
+    {
     }
 
     public void Validate()

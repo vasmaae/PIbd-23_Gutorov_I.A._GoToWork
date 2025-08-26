@@ -26,18 +26,18 @@ public class DetailsController(IDetailAdapter adapter) : ControllerBase
     [HttpPost]
     public IActionResult Register([FromBody] DetailBindingModel model)
     {
-        return adapter.RegisterDetail(model).GetResponse(Request, Response);
+        return adapter.CreateDetail(model).GetResponse(Request, Response);
     }
 
     [HttpPut]
     public IActionResult ChangeInfo([FromBody] DetailBindingModel model)
     {
-        return adapter.ChangeDetailInfo(model).GetResponse(Request, Response);
+        return adapter.UpdateDetail(model).GetResponse(Request, Response);
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(string id)
     {
-        return adapter.RemoveDetail(id).GetResponse(Request, Response);
+        return adapter.DeleteDetail(id).GetResponse(Request, Response);
     }
 }

@@ -10,10 +10,8 @@ public class WorkshopDataModel : IValidation
     public string? ProductionId { get; set; }
     public string Address { get; set; }
     public List<EmployeeWorkshopDataModel>? Employees { get; set; }
-    private ProductionDataModel? _production;
-    public string ProductionName => _production?.Name ?? string.Empty;
-
-    public WorkshopDataModel() { }
+    public string ProductionName => Production?.Name ?? string.Empty;
+    public ProductionDataModel? Production { get; set; }
 
     public WorkshopDataModel(string id, string? productionId, string address, List<EmployeeWorkshopDataModel> employees)
     {
@@ -26,7 +24,11 @@ public class WorkshopDataModel : IValidation
     public WorkshopDataModel(string id, string? productionId, string address, List<EmployeeWorkshopDataModel> employees,
         ProductionDataModel? production) : this(id, productionId, address, employees)
     {
-        _production = production;
+        Production = production;
+    }
+
+    public WorkshopDataModel()
+    {
     }
 
     public void Validate()
@@ -37,8 +39,6 @@ public class WorkshopDataModel : IValidation
             throw new ValidationException("The value in the field Id is not a Guid");
         if (Address.IsEmpty())
             throw new ValidationException("Field Address is empty");
-        if ((Employees?.Count ?? 0) == 0)
-            throw new ValidationException("Workshop must include employees");
         if (ProductionId is not null)
         {
             if (ProductionId.IsEmpty())

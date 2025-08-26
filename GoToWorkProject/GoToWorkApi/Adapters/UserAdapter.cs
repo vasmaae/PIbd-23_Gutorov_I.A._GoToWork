@@ -98,6 +98,7 @@ public class UserAdapter : IUserAdapter
     {
         try
         {
+            userModel.Id = Guid.NewGuid().ToString();
             _userBusinessLogic.InsertUser(_mapper.Map<UserDataModel>(userModel));
             return UserOperationResponse.NoContent();
         }

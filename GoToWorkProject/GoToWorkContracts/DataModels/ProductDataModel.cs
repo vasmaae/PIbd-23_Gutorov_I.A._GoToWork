@@ -11,12 +11,11 @@ public class ProductDataModel : IValidation
     public string Name { get; set; }
     public DateTime CreationDate { get; set; }
     public List<DetailProductDataModel>? Details { get; set; }
-    private MachineDataModel? _machine;
-    public string MachineName => _machine?.Model ?? string.Empty;
+    public string MachineName => Machine?.Model ?? string.Empty;
+    public MachineDataModel? Machine { get; set; }
 
-    public ProductDataModel() { }
-
-    public ProductDataModel(string id, string? machineId, string name, DateTime creationDate, List<DetailProductDataModel> details)
+    public ProductDataModel(string id, string? machineId, string name, DateTime creationDate,
+        List<DetailProductDataModel> details)
     {
         Id = id;
         MachineId = machineId;
@@ -29,7 +28,11 @@ public class ProductDataModel : IValidation
         List<DetailProductDataModel> details, MachineDataModel? machine) : this(id, machineId, name, creationDate,
         details)
     {
-        _machine = machine;
+        Machine = machine;
+    }
+
+    public ProductDataModel()
+    {
     }
 
     public void Validate()
@@ -40,8 +43,6 @@ public class ProductDataModel : IValidation
             throw new ValidationException("The value in the field Id is not a Guid");
         if (Name.IsEmpty())
             throw new ValidationException("Field Name is empty");
-        if ((Details?.Count ?? 0) == 0)
-            throw new ValidationException("Product must include details");
         if (MachineId is not null)
         {
             if (MachineId.IsEmpty())

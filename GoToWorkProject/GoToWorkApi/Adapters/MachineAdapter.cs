@@ -23,8 +23,12 @@ public class MachineAdapter : IMachineAdapter
         var config = new MapperConfiguration(cfg =>
         {
             cfg.CreateMap<MachineBindingModel, MachineDataModel>();
-            cfg.CreateMap<EmployeeMachineBindingModel, EmployeeMachineDataModel>();
             cfg.CreateMap<MachineDataModel, MachineViewModel>();
+            cfg.CreateMap<ProductBindingModel, ProductDataModel>();
+            cfg.CreateMap<ProductDataModel, ProductViewModel>();
+            cfg.CreateMap<EmployeeBindingModel, EmployeeDataModel>();
+            cfg.CreateMap<EmployeeDataModel, EmployeeViewModel>();
+            cfg.CreateMap<EmployeeMachineBindingModel, EmployeeMachineDataModel>();
             cfg.CreateMap<EmployeeMachineDataModel, EmployeeMachineViewModel>();
         });
         _mapper = new Mapper(config);
@@ -96,6 +100,7 @@ public class MachineAdapter : IMachineAdapter
     {
         try
         {
+            machineModel.Id = Guid.NewGuid().ToString();
             _machineBusinessLogic.InsertMachine(_mapper.Map<MachineDataModel>(machineModel));
             return MachineOperationResponse.NoContent();
         }

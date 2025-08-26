@@ -12,14 +12,16 @@ public class DetailDataModel : IValidation
     public MaterialType Material { get; set; }
     public DateTime CreationDate { get; set; }
 
-    public DetailDataModel() { }
-
     public DetailDataModel(string id, string name, MaterialType material, DateTime creationDate)
     {
         Id = id;
         Name = name;
         Material = material;
         CreationDate = creationDate.ToUniversalTime();
+    }
+
+    public DetailDataModel()
+    {
     }
 
     public void Validate()

@@ -9,16 +9,21 @@ public class ProductionDataModel : IValidation
     public string Id { get; set; }
     public string Name { get; set; }
     public List<DetailProductionDataModel>? Details { get; set; }
+    public List<WorkshopDataModel>? Workshops { get; set; }
 
-    public ProductionDataModel() { }
-
-    public ProductionDataModel(string id, string name, List<DetailProductionDataModel> details)
+    public ProductionDataModel(string id, string name, List<DetailProductionDataModel> details,
+        List<WorkshopDataModel>? workshops)
     {
         Id = id;
         Name = name;
         Details = details;
+        Workshops = workshops;
     }
-    
+
+    public ProductionDataModel()
+    {
+    }
+
     public void Validate()
     {
         if (Id.IsEmpty())
@@ -27,7 +32,5 @@ public class ProductionDataModel : IValidation
             throw new ValidationException("The value in the field Id is not a Guid");
         if (Name.IsEmpty())
             throw new ValidationException("Field Name is empty");
-        if ((Details?.Count ?? 0) == 0)
-            throw new ValidationException("Production must include details");
     }
 }

@@ -11,15 +11,20 @@ public class MachineDataModel : IValidation
     public string Model { get; set; }
     public MachineType Type { get; set; }
     public List<EmployeeMachineDataModel>? Employees { get; set; }
+    public List<ProductDataModel>? Products { get; set; }
 
-    public MachineDataModel() { }
-
-    public MachineDataModel(string id, string model, MachineType type, List<EmployeeMachineDataModel> employees)
+    public MachineDataModel(string id, string model, MachineType type, List<EmployeeMachineDataModel> employees,
+        List<ProductDataModel>? products)
     {
         Id = id;
         Model = model;
         Type = type;
         Employees = employees;
+        Products = products;
+    }
+
+    public MachineDataModel()
+    {
     }
 
     public void Validate()
@@ -32,7 +37,5 @@ public class MachineDataModel : IValidation
             throw new ValidationException("Field Model is empty");
         if (Type == MachineType.None)
             throw new ValidationException("Field Machine is empty");
-        if ((Employees?.Count ?? 0) == 0)
-            throw new ValidationException("Machine must include employees");
     }
 }

@@ -12,6 +12,9 @@ import ReportsPage from '../components/ReportsPage';
 import DetailForm from '../components/DetailForm';
 import ProductForm from '../components/ProductForm';
 import ProductionForm from '../components/ProductionForm';
+import EmployeeForm from '../components/EmployeeForm';
+import MachineForm from '../components/MachineForm';
+import WorkshopForm from '../components/WorkshopForm';
 
 const AppRouter = () => {
     return (
@@ -31,8 +34,14 @@ const AppRouter = () => {
                     <Route path="productions/new" element={<ProductionForm />} />
                     <Route path="productions/edit/:id" element={<ProductionForm />} />
                     <Route path="employees" element={<EmployeesPage />} />
+                    <Route path="employees/new" element={<EmployeeForm />} />
+                    <Route path="employees/edit/:id" element={<EmployeeForm />} />
                     <Route path="machines" element={<MachinesPage />} />
+                    <Route path="machines/new" element={<MachineForm />} />
+                    <Route path="machines/edit/:id" element={<MachineForm />} />
                     <Route path="workshops" element={<WorkshopsPage />} />
+                    <Route path="workshops/new" element={<WorkshopForm />} />
+                    <Route path="workshops/edit/:id" element={<WorkshopForm />} />
                     <Route path="reports" element={<ReportsPage />} />
                 </Route>
             </Routes>

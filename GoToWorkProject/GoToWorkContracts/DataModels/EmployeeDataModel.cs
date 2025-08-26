@@ -9,12 +9,14 @@ public class EmployeeDataModel : IValidation
     public string Id { get; set; }
     public string FullName { get; set; }
 
-    public EmployeeDataModel() { }
-
     public EmployeeDataModel(string id, string fullName)
     {
         Id = id;
         FullName = fullName;
+    }
+
+    public EmployeeDataModel()
+    {
     }
 
     public void Validate()

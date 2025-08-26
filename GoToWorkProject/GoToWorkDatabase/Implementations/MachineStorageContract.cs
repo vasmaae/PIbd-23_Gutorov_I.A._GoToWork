@@ -17,8 +17,18 @@ internal class MachineStorageContract : IMachineStorageContract
         _dbContext = dbContext;
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<Machine, MachineDataModel>();
-            cfg.CreateMap<MachineDataModel, Machine>();
+            cfg.CreateMap<Machine, MachineDataModel>()
+                .ForMember(dest => dest.Employees, opt => opt.MapFrom(src => src.EmployeeMachines))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.MachineType));
+            cfg.CreateMap<MachineDataModel, Machine>()
+                .ForMember(dest => dest.EmployeeMachines, opt => opt.MapFrom(src => src.Employees))
+                .ForMember(dest => dest.MachineType, opt => opt.MapFrom(src => src.Type));
+            cfg.CreateMap<Employee, EmployeeDataModel>();
+            cfg.CreateMap<EmployeeDataModel, Employee>();
+            cfg.CreateMap<EmployeeMachine, EmployeeMachineDataModel>();
+            cfg.CreateMap<EmployeeMachineDataModel, EmployeeMachine>();
+            cfg.CreateMap<Product, ProductDataModel>();
+            cfg.CreateMap<ProductDataModel, Product>();
         });
         _mapper = new Mapper(config);
     }
@@ -27,7 +37,14 @@ internal class MachineStorageContract : IMachineStorageContract
     {
         try
         {
-            return [.. _dbContext.Machines.Select(m => _mapper.Map<MachineDataModel>(m))];
+            return
+            [
+                .. _dbContext.Machines
+                    .Include(x => x.Products)
+                    .Include(x => x.EmployeeMachines)!
+                    .ThenInclude(x => x.Employee)
+                    .Select(m => _mapper.Map<MachineDataModel>(m))
+            ];
         }
         catch (Exception ex)
         {
@@ -53,7 +70,11 @@ internal class MachineStorageContract : IMachineStorageContract
     {
         try
         {
-            return _mapper.Map<MachineDataModel>(_dbContext.Machines.FirstOrDefault(m => m.Model == model));
+            return _mapper.Map<MachineDataModel>(_dbContext.Machines
+                .Include(x => x.EmployeeMachines)!
+                .ThenInclude(x => x.Employee)
+                .Include(x => x.Products)
+                .FirstOrDefault(m => m.Model == model));
         }
         catch (Exception ex)
         {
@@ -124,6 +145,10 @@ internal class MachineStorageContract : IMachineStorageContract
 
     private Machine? GetMachineById(string id)
     {
-        return _dbContext.Machines.FirstOrDefault(m => m.Id == id);
+        return _dbContext.Machines
+            .Include(x => x.EmployeeMachines)!
+            .ThenInclude(x => x.Employee)
+            .Include(x => x.Products)
+            .FirstOrDefault(m => m.Id == id);
     }
 }

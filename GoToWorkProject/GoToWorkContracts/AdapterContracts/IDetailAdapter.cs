@@ -8,7 +8,7 @@ public interface IDetailAdapter
     DetailOperationResponse GetList();
     DetailOperationResponse GetElementsByCreationDate(DateTime? from = null, DateTime? to = null);
     DetailOperationResponse GetElement(string data);
-    DetailOperationResponse RegisterDetail(DetailBindingModel detailModel);
-    DetailOperationResponse ChangeDetailInfo(DetailBindingModel detailModel);
-    DetailOperationResponse RemoveDetail(string id);
+    DetailOperationResponse CreateDetail(DetailBindingModel detailModel);
+    DetailOperationResponse UpdateDetail(DetailBindingModel detailModel);
+    DetailOperationResponse DeleteDetail(string id);
 }

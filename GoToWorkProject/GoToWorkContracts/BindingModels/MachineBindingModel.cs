@@ -8,4 +8,5 @@ public class MachineBindingModel
     public string? Model { get; set; }
     public MachineType Type { get; set; }
     public List<EmployeeMachineBindingModel>? Employees { get; set; }
+    public List<ProductBindingModel>? Products { get; set; }
 }

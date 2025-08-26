@@ -8,12 +8,10 @@ public class EmployeeWorkshopDataModel : IValidation
 {
     public string EmployeeId { get; set; }
     public string WorkshopId { get; set; }
-    private EmployeeDataModel? _employee;
-    private WorkshopDataModel? _workshop;
     public string EmployeeName => _employee?.FullName ?? string.Empty;
     public string WorkshopName => _workshop?.Address ?? string.Empty;
-
-    public EmployeeWorkshopDataModel() { }
+    private readonly EmployeeDataModel? _employee;
+    private readonly WorkshopDataModel? _workshop;
 
     public EmployeeWorkshopDataModel(string employeeId, string workshopId)
     {
@@ -26,6 +24,10 @@ public class EmployeeWorkshopDataModel : IValidation
     {
         _employee = employee;
         _workshop = workshop;
+    }
+
+    public EmployeeWorkshopDataModel()
+    {
     }
 
     public void Validate()

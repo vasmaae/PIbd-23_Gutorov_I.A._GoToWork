@@ -25,8 +25,10 @@ public class ProductionAdapter : IProductionAdapter
         {
             cfg.CreateMap<ProductionBindingModel, ProductionDataModel>();
             cfg.CreateMap<DetailProductionBindingModel, DetailProductionDataModel>();
+            cfg.CreateMap<WorkshopBindingModel, WorkshopDataModel>();
             cfg.CreateMap<ProductionDataModel, ProductionViewModel>();
             cfg.CreateMap<DetailProductionDataModel, DetailProductionViewModel>();
+            cfg.CreateMap<WorkshopDataModel, WorkshopViewModel>();
         });
         _mapper = new Mapper(config);
     }

@@ -9,12 +9,10 @@ public class DetailProductDataModel : IValidation
     public string ProductId { get; set; }
     public string DetailId { get; set; }
     public int Quantity { get; set; }
-    private ProductDataModel? _product;
-    private DetailDataModel? _detail;
     public string DetailName => _detail?.Name ?? string.Empty;
     public string ProductName => _product?.Name ?? string.Empty;
-
-    public DetailProductDataModel() { }
+    private readonly DetailDataModel? _detail;
+    private readonly ProductDataModel? _product;
 
     public DetailProductDataModel(string productId, string detailId, int quantity)
     {
@@ -28,6 +26,10 @@ public class DetailProductDataModel : IValidation
     {
         _detail = detail;
         _product = product;
+    }
+
+    public DetailProductDataModel()
+    {
     }
 
     public void Validate()

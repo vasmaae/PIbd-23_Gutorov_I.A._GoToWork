@@ -9,4 +9,5 @@ public class MachineViewModel
     public required string Model { get; set; }
     public MachineType Type { get; set; }
     public required List<EmployeeMachineViewModel>? Employees { get; set; }
+    public required List<ProductViewModel>? Products { get; set; }
 }

@@ -2,6 +2,7 @@ using AutoMapper;
 using GoToWorkContracts.DataModels;
 using GoToWorkContracts.Exceptions;
 using GoToWorkContracts.StoragesContracts;
+using GoToWorkContracts.ViewModels;
 using GoToWorkDatabase.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,14 @@ internal class EmployeeStorageContract : IEmployeeStorageContract
         {
             cfg.CreateMap<Employee, EmployeeDataModel>();
             cfg.CreateMap<EmployeeDataModel, Employee>();
+            cfg.CreateMap<Machine, MachineDataModel>();
+            cfg.CreateMap<MachineDataModel, Machine>();
+            cfg.CreateMap<Workshop, WorkshopDataModel>();
+            cfg.CreateMap<WorkshopDataModel, Workshop>();
+            cfg.CreateMap<EmployeeMachine, EmployeeMachineDataModel>();
+            cfg.CreateMap<EmployeeMachineDataModel, EmployeeMachine>();
+            cfg.CreateMap<EmployeeWorkshop, EmployeeWorkshopDataModel>();
+            cfg.CreateMap<EmployeeWorkshopDataModel, EmployeeWorkshop>();
         });
         _mapper = new Mapper(config);
     }
@@ -27,7 +36,15 @@ internal class EmployeeStorageContract : IEmployeeStorageContract
     {
         try
         {
-            return [.. _dbContext.Employees.AsQueryable().Select(x => _mapper.Map<EmployeeDataModel>(x))];
+            return
+            [
+                .. _dbContext.Employees
+                    .Include(x => x.EmployeeMachines)!
+                    .ThenInclude(x => x.Machine)
+                    .Include(x => x.EmployeeWorkshops)!
+                    .ThenInclude(x => x.Workshop)
+                    .Select(x => _mapper.Map<EmployeeDataModel>(x))
+            ];
         }
         catch (Exception ex)
         {
@@ -55,7 +72,12 @@ internal class EmployeeStorageContract : IEmployeeStorageContract
         {
             return
             [
-                .. _dbContext.Employees.Where(e => e.FullName == fullName)
+                .. _dbContext.Employees
+                    .Include(x => x.EmployeeMachines)!
+                    .ThenInclude(x => x.Machine)
+                    .Include(x => x.EmployeeWorkshops)!
+                    .ThenInclude(x => x.Workshop)
+                    .Where(e => e.FullName == fullName)
                     .Select(x => _mapper.Map<EmployeeDataModel>(x))
             ];
         }
@@ -127,7 +149,9 @@ internal class EmployeeStorageContract : IEmployeeStorageContract
     }
 
     private Employee? GetEmployeeById(string id) => _dbContext.Employees
-        .Include(x => x.EmployeeMachines)
-        .Include(x => x.EmployeeWorkshops)
+        .Include(x => x.EmployeeMachines)!
+        .ThenInclude(x => x.Machine)
+        .Include(x => x.EmployeeWorkshops)!
+        .ThenInclude(x => x.Workshop)
         .FirstOrDefault(e => e.Id == id);
 }

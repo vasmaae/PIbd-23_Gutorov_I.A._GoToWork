@@ -117,7 +117,7 @@ public class DetailAdapter : IDetailAdapter
         }
     }
 
-    public DetailOperationResponse RegisterDetail(DetailBindingModel detailModel)
+    public DetailOperationResponse CreateDetail(DetailBindingModel detailModel)
     {
         try
         {
@@ -153,7 +153,7 @@ public class DetailAdapter : IDetailAdapter
         }
     }
 
-    public DetailOperationResponse ChangeDetailInfo(DetailBindingModel detailModel)
+    public DetailOperationResponse UpdateDetail(DetailBindingModel detailModel)
     {
         try
         {
@@ -198,7 +198,7 @@ public class DetailAdapter : IDetailAdapter
         }
     }
 
-    public DetailOperationResponse RemoveDetail(string id)
+    public DetailOperationResponse DeleteDetail(string id)
     {
         try
         {

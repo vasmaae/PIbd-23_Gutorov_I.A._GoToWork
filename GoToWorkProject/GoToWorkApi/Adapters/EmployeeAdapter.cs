@@ -94,6 +94,7 @@ public class EmployeeAdapter : IEmployeeAdapter
     {
         try
         {
+            employeeModel.Id = Guid.NewGuid().ToString();
             _employeeBusinessLogic.InsertEmployee(_mapper.Map<EmployeeDataModel>(employeeModel));
             return EmployeeOperationResponse.NoContent();
         }

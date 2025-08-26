@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using GoToWorkContracts.Enums;
 using GoToWorkContracts.Exceptions;
 using GoToWorkContracts.Extensions;
@@ -14,8 +13,6 @@ public class UserDataModel : IValidation
     public string Password { get; set; }
     public UserRole Role { get; set; }
 
-    public UserDataModel() { }
-
     public UserDataModel(string id, string login, string email, string password, UserRole role)
     {
         Id = id;
@@ -23,6 +20,10 @@ public class UserDataModel : IValidation
         Email = email;
         Password = password;
         Role = role;
+    }
+
+    public UserDataModel()
+    {
     }
 
     public void Validate()

@@ -17,16 +17,16 @@ internal class ProductStorageContract : IProductStorageContract
         _dbContext = dbContext;
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<DetailProduct, DetailProductDataModel>();
-            cfg.CreateMap<DetailProductDataModel, DetailProduct>();
-            cfg.CreateMap<Detail, DetailDataModel>();
-            cfg.CreateMap<DetailDataModel, Detail>();
-            cfg.CreateMap<Machine, MachineDataModel>();
-            cfg.CreateMap<MachineDataModel, Machine>();
             cfg.CreateMap<Product, ProductDataModel>()
                 .ForMember(dest => dest.Details, opt => opt.MapFrom(x => x.DetailProducts));
             cfg.CreateMap<ProductDataModel, Product>()
                 .ForMember(dest => dest.DetailProducts, opt => opt.MapFrom(x => x.Details));
+            cfg.CreateMap<Machine, MachineDataModel>();
+            cfg.CreateMap<MachineDataModel, Machine>();
+            cfg.CreateMap<Detail, DetailDataModel>();
+            cfg.CreateMap<DetailDataModel, Detail>();
+            cfg.CreateMap<DetailProduct, DetailProductDataModel>();
+            cfg.CreateMap<DetailProductDataModel, DetailProduct>();
         });
         _mapper = new Mapper(config);
     }
@@ -37,9 +37,9 @@ internal class ProductStorageContract : IProductStorageContract
         try
         {
             var query = _dbContext.Products
+                .Include(x => x.Machine)
                 .Include(x => x.DetailProducts)!
                 .ThenInclude(x => x.Detail)
-                .Include(x => x.Machine)
                 .AsQueryable();
             if (startDate is not null)
                 query = query.Where(p => p.CreationDate >= startDate.Value);
@@ -73,7 +73,11 @@ internal class ProductStorageContract : IProductStorageContract
     {
         try
         {
-            return _mapper.Map<ProductDataModel>(_dbContext.Products.FirstOrDefault(p => p.Name == name));
+            return _mapper.Map<ProductDataModel>(_dbContext.Products
+                .Include(x => x.Machine)
+                .Include(x => x.DetailProducts)!
+                .ThenInclude(x => x.Detail)
+                .FirstOrDefault(p => p.Name == name));
         }
         catch (Exception ex)
         {
@@ -145,6 +149,6 @@ internal class ProductStorageContract : IProductStorageContract
     private Product? GetProductById(string id) => _dbContext.Products
         .Include(x => x.Machine)
         .Include(x => x.DetailProducts)!
-        // .ThenInclude(x => x.Detail)
+        .ThenInclude(x => x.Detail)
         .FirstOrDefault(p => p.Id == id);
 }

@@ -58,6 +58,7 @@ const ProductionsPage = () => {
                     <tr>
                         <th>Название</th>
                         <th>Детали</th>
+                        <th>Цеха</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
@@ -69,6 +70,13 @@ const ProductionsPage = () => {
                                 <ul>
                                     {(production.details || []).map(d => (
                                         <li key={d.detailId}>{d.detailName}</li>
+                                    ))}
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    {(production.workshops || []).map(w => (
+                                        <li key={w.id}>{w.address}</li>
                                     ))}
                                 </ul>
                             </td>

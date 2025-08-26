@@ -19,13 +19,14 @@ public class ProductAdapter : IProductAdapter
     {
         _productBusinessLogic = productBusinessLogic;
         _logger = logger;
-
         var config = new MapperConfiguration(cfg =>
         {
+            cfg.CreateMap<ProductBindingModel, ProductDataModel>();
+            cfg.CreateMap<ProductDataModel, ProductViewModel>();
+            cfg.CreateMap<MachineBindingModel, MachineDataModel>();
+            cfg.CreateMap<MachineDataModel, MachineViewModel>();
             cfg.CreateMap<DetailProductBindingModel, DetailProductDataModel>();
             cfg.CreateMap<DetailProductDataModel, DetailProductViewModel>();
-            cfg.CreateMap<ProductBindingModel, ProductDataModel>();
-            cfg.CreateMap<ProductDataModel, ProductViewModel>() ;
         });
         _mapper = new Mapper(config);
     }

@@ -17,8 +17,16 @@ internal class WorkshopStorageContract : IWorkshopStorageContract
         _dbContext = dbContext;
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<Workshop, WorkshopDataModel>();
-            cfg.CreateMap<WorkshopDataModel, Workshop>();
+            cfg.CreateMap<Workshop, WorkshopDataModel>()
+                .ForMember(dest => dest.Employees, opt => opt.MapFrom(src => src.EmployeeWorkshops));
+            cfg.CreateMap<WorkshopDataModel, Workshop>()
+                .ForMember(dest => dest.EmployeeWorkshops, opt => opt.MapFrom(src => src.Employees));
+            cfg.CreateMap<Production, ProductionDataModel>();
+            cfg.CreateMap<ProductionDataModel, Production>();
+            cfg.CreateMap<Employee, EmployeeDataModel>();
+            cfg.CreateMap<EmployeeDataModel, Employee>();
+            cfg.CreateMap<EmployeeWorkshop, EmployeeWorkshopDataModel>();
+            cfg.CreateMap<EmployeeWorkshopDataModel, EmployeeWorkshop>();
         });
         _mapper = new Mapper(config);
     }
@@ -27,7 +35,11 @@ internal class WorkshopStorageContract : IWorkshopStorageContract
     {
         try
         {
-            var query = _dbContext.Workshops.AsQueryable();
+            var query = _dbContext.Workshops
+                .Include(x => x.Production)
+                .Include(x => x.EmployeeWorkshops)!
+                .ThenInclude(x => x.Employee)
+                .AsQueryable();
             if (productionId is not null)
                 query = query.Where(w => w.ProductionId == productionId);
             return [.. query.Select(w => _mapper.Map<WorkshopDataModel>(w))];
@@ -56,7 +68,11 @@ internal class WorkshopStorageContract : IWorkshopStorageContract
     {
         try
         {
-            var workshop = _dbContext.Workshops.FirstOrDefault(w => w.Address == address);
+            var workshop = _dbContext.Workshops
+                .Include(x => x.Production)
+                .Include(x => x.EmployeeWorkshops)!
+                .ThenInclude(x => x.Employee)
+                .FirstOrDefault(w => w.Address == address);
             return _mapper.Map<WorkshopDataModel>(workshop);
         }
         catch (Exception ex)
@@ -126,5 +142,9 @@ internal class WorkshopStorageContract : IWorkshopStorageContract
         }
     }
 
-    private Workshop? GetWorkshopById(string id) => _dbContext.Workshops.FirstOrDefault(w => w.Id == id);
+    private Workshop? GetWorkshopById(string id) => _dbContext.Workshops
+        .Include(x => x.Production)
+        .Include(x => x.EmployeeWorkshops)!
+        .ThenInclude(x => x.Employee)
+        .FirstOrDefault(w => w.Id == id);
 }

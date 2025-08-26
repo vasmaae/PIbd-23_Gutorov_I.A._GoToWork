@@ -8,12 +8,10 @@ public class EmployeeMachineDataModel : IValidation
 {
     public string EmployeeId { get; set; }
     public string MachineId { get; set; }
-    private EmployeeDataModel? _employee;
-    private MachineDataModel? _machine;
     public string EmployeeName => _employee?.FullName ?? string.Empty;
     public string MachineName => _machine?.Model ?? string.Empty;
-
-    public EmployeeMachineDataModel() { }
+    private readonly EmployeeDataModel? _employee;
+    private readonly MachineDataModel? _machine;
 
     public EmployeeMachineDataModel(string employeeId, string machineId)
     {
@@ -26,6 +24,10 @@ public class EmployeeMachineDataModel : IValidation
     {
         _employee = employee;
         _machine = machine;
+    }
+
+    public EmployeeMachineDataModel()
+    {
     }
 
     public void Validate()

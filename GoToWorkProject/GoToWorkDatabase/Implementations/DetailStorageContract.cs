@@ -19,6 +19,14 @@ internal class DetailStorageContract : IDetailStorageContract
         {
             cfg.CreateMap<Detail, DetailDataModel>();
             cfg.CreateMap<DetailDataModel, Detail>();
+            cfg.CreateMap<Product, ProductDataModel>();
+            cfg.CreateMap<ProductDataModel, Product>();
+            cfg.CreateMap<Production, ProductionDataModel>();
+            cfg.CreateMap<ProductionDataModel, Production>();
+            cfg.CreateMap<DetailProduct, DetailProductDataModel>();
+            cfg.CreateMap<DetailProductDataModel, DetailProduct>();
+            cfg.CreateMap<DetailProduction, DetailProductionDataModel>();
+            cfg.CreateMap<DetailProductionDataModel, DetailProduction>();
         });
         _mapper = new Mapper(config);
     }
@@ -27,7 +35,12 @@ internal class DetailStorageContract : IDetailStorageContract
     {
         try
         {
-            var query = _dbContext.Details.AsQueryable();
+            var query = _dbContext.Details
+                .Include(x => x.DetailProducts)!
+                .ThenInclude(x => x.Product)
+                .Include(x => x.DetailProductions)!
+                .ThenInclude(x => x.Production)
+                .AsQueryable();
             if (startDate is not null)
                 query = query.Where(x => x.CreationDate >= startDate);
             if (endDate is not null)
@@ -58,7 +71,11 @@ internal class DetailStorageContract : IDetailStorageContract
     {
         try
         {
-            return _mapper.Map<DetailDataModel>(_dbContext.Details.FirstOrDefault(d => d.Name == name));
+            return _mapper.Map<DetailDataModel>(_dbContext.Details
+                .Include(x => x.DetailProducts)!
+                .ThenInclude(x => x.Product)
+                .Include(x => x.DetailProductions)!
+                .ThenInclude(x => x.Production).FirstOrDefault(d => d.Name == name));
         }
         catch (Exception ex)
         {
@@ -127,5 +144,10 @@ internal class DetailStorageContract : IDetailStorageContract
         }
     }
 
-    private Detail? GetDetailById(string id) => _dbContext.Details.FirstOrDefault(d => d.Id == id);
+    private Detail? GetDetailById(string id) => _dbContext.Details
+        .Include(x => x.DetailProducts)!
+        .ThenInclude(x => x.Product)
+        .Include(x => x.DetailProductions)!
+        .ThenInclude(x => x.Production)
+        .FirstOrDefault(d => d.Id == id);
 }
