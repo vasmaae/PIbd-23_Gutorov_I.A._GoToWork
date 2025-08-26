@@ -22,10 +22,10 @@ public class ProductAdapter : IProductAdapter
 
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<ProductBindingModel, ProductDataModel>();
             cfg.CreateMap<DetailProductBindingModel, DetailProductDataModel>();
-            cfg.CreateMap<ProductDataModel, ProductViewModel>();
             cfg.CreateMap<DetailProductDataModel, DetailProductViewModel>();
+            cfg.CreateMap<ProductBindingModel, ProductDataModel>();
+            cfg.CreateMap<ProductDataModel, ProductViewModel>() ;
         });
         _mapper = new Mapper(config);
     }
@@ -150,6 +150,7 @@ public class ProductAdapter : IProductAdapter
     {
         try
         {
+            productModel.Id = Guid.NewGuid().ToString();
             _productBusinessLogic.InsertProduct(_mapper.Map<ProductDataModel>(productModel));
             return ProductOperationResponse.NoContent();
         }

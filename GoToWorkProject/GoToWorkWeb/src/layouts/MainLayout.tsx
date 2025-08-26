@@ -1,18 +1,71 @@
-import { Container, Nav, Navbar } from 'react-bootstrap';
-import { Link, Outlet } from 'react-router-dom';
+import { Container, Nav, Navbar, Button } from 'react-bootstrap';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { getToken, logout, getUserRole } from '../services/authService';
+import { useEffect, useState } from 'react';
 
 const MainLayout = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(!!getToken());
+    const [userRole, setUserRole] = useState(getUserRole());
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const handleAuthChange = () => {
+            setIsAuthenticated(!!getToken());
+            setUserRole(getUserRole());
+        };
+        window.addEventListener('authChange', handleAuthChange);
+        window.addEventListener('storage', handleAuthChange);
+        return () => {
+            window.removeEventListener('authChange', handleAuthChange);
+            window.removeEventListener('storage', handleAuthChange);
+        };
+    }, []);
+
+    const handleLogout = () => {
+        logout();
+        window.dispatchEvent(new Event('authChange'));
+        navigate('/login');
+    };
+
+    const renderExecutorLinks = () => (
+        <>
+            <Nav.Link as={Link} to="/details">Детали</Nav.Link>
+            <Nav.Link as={Link} to="/products">Изделия</Nav.Link>
+            <Nav.Link as={Link} to="/productions">Производства</Nav.Link>
+            <Nav.Link as={Link} to="/reports">Отчёты</Nav.Link>
+        </>
+    );
+
+    const renderGuarantorLinks = () => (
+        <>
+            <Nav.Link as={Link} to="/employees">Работники</Nav.Link>
+            <Nav.Link as={Link} to="/machines">Станки</Nav.Link>
+            <Nav.Link as={Link} to="/workshops">Цеха</Nav.Link>
+            <Nav.Link as={Link} to="/reports">Отчёты</Nav.Link>
+        </>
+    );
+
     return (
         <>
             <Navbar bg="dark" variant="dark" expand="lg">
                 <Container>
-                    <Navbar.Brand as={Link} to="/">GoToWork</Navbar.Brand>
+                    <Navbar.Brand as={Link} to="/">Завод "Иди работать"</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <Nav.Link as={Link} to="/">Home</Nav.Link>
-                            <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                            <Nav.Link as={Link} to="/register">Register</Nav.Link>
+                            <Nav.Link as={Link} to="/">Главная</Nav.Link>
+                            {isAuthenticated && userRole === 1 && renderExecutorLinks()}
+                            {isAuthenticated && userRole === 2 && renderGuarantorLinks()}
+                        </Nav>
+                        <Nav>
+                            {!isAuthenticated ? (
+                                <>
+                                    <Nav.Link as={Link} to="/login">Вход</Nav.Link>
+                                    <Nav.Link as={Link} to="/register">Регистрация</Nav.Link>
+                                </>
+                            ) : (
+                                <Button variant="outline-light" onClick={handleLogout}>Выход</Button>
+                            )}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

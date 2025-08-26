@@ -17,8 +17,16 @@ internal class ProductionStorageContract : IProductionStorageContract
         _dbContext = dbContext;
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<Production, ProductionDataModel>();
-            cfg.CreateMap<ProductionDataModel, Production>();
+            cfg.CreateMap<DetailProduction, DetailProductionDataModel>();
+            cfg.CreateMap<DetailProductionDataModel, DetailProduction>();
+            cfg.CreateMap<Detail, DetailDataModel>();
+            cfg.CreateMap<DetailDataModel, Detail>();
+            cfg.CreateMap<Workshop, WorkshopDataModel>();
+            cfg.CreateMap<WorkshopDataModel, Workshop>();
+            cfg.CreateMap<Production, ProductionDataModel>()
+                .ForMember(dest => dest.Details, opt => opt.MapFrom(x => x.DetailProductions));
+            cfg.CreateMap<ProductionDataModel, Production>()
+                .ForMember(dest => dest.DetailProductions, opt => opt.MapFrom(x => x.Details));
         });
         _mapper = new Mapper(config);
     }
@@ -27,7 +35,14 @@ internal class ProductionStorageContract : IProductionStorageContract
     {
         try
         {
-            return [.._dbContext.Productions.Select(p => _mapper.Map<ProductionDataModel>(p))];
+            return
+            [
+                .._dbContext.Productions
+                    .Include(p => p.Workshops)
+                    .Include(p => p.DetailProductions)!
+                    .ThenInclude(d => d.Detail)
+                    .Select(p => _mapper.Map<ProductionDataModel>(p))
+            ];
         }
         catch (Exception ex)
         {

@@ -97,6 +97,7 @@ public class ProductionAdapter : IProductionAdapter
     {
         try
         {
+            productionModel.Id = Guid.NewGuid().ToString();
             _productionBusinessLogic.InsertProduction(_mapper.Map<ProductionDataModel>(productionModel));
             return ProductionOperationResponse.NoContent();
         }

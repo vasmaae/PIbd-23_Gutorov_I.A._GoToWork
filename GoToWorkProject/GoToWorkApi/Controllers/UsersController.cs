@@ -9,36 +9,29 @@ namespace GoToWorkApi.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Produces("application/json")]
-public class UsersController : ControllerBase
+public class UsersController(IUserAdapter adapter) : ControllerBase
 {
-    private readonly IUserAdapter _adapter;
-
-    public UsersController(IUserAdapter adapter)
-    {
-        _adapter = adapter;
-    }
-
     [HttpGet]
     public IActionResult GetAllRecords()
     {
-        return _adapter.GetList().GetResponse(Request, Response);
+        return adapter.GetList().GetResponse(Request, Response);
     }
 
     [HttpGet("{data}")]
     public IActionResult GetRecord(string data)
     {
-        return _adapter.GetElement(data).GetResponse(Request, Response);
+        return adapter.GetElement(data).GetResponse(Request, Response);
     }
 
     [HttpPut]
     public IActionResult Update([FromBody] UserBindingModel model)
     {
-        return _adapter.UpdateUser(model).GetResponse(Request, Response);
+        return adapter.UpdateUser(model).GetResponse(Request, Response);
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(string id)
     {
-        return _adapter.DeleteUser(id).GetResponse(Request, Response);
+        return adapter.DeleteUser(id).GetResponse(Request, Response);
     }
 }

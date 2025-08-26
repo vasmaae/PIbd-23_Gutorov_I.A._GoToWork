@@ -121,6 +121,7 @@ public class DetailAdapter : IDetailAdapter
     {
         try
         {
+            detailModel.Id = Guid.NewGuid().ToString();
             _detailBusinessLogicContract.InsertDetail(_mapper.Map<DetailDataModel>(detailModel));
             return DetailOperationResponse.NoContent();
         }

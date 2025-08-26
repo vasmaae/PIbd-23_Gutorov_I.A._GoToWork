@@ -34,4 +34,10 @@ public class DetailsController(IDetailAdapter adapter) : ControllerBase
     {
         return adapter.ChangeDetailInfo(model).GetResponse(Request, Response);
     }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(string id)
+    {
+        return adapter.RemoveDetail(id).GetResponse(Request, Response);
+    }
 }

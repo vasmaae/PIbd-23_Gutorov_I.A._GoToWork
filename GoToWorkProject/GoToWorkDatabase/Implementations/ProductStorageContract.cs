@@ -17,8 +17,16 @@ internal class ProductStorageContract : IProductStorageContract
         _dbContext = dbContext;
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<Product, ProductDataModel>();
-            cfg.CreateMap<ProductDataModel, Product>();
+            cfg.CreateMap<DetailProduct, DetailProductDataModel>();
+            cfg.CreateMap<DetailProductDataModel, DetailProduct>();
+            cfg.CreateMap<Detail, DetailDataModel>();
+            cfg.CreateMap<DetailDataModel, Detail>();
+            cfg.CreateMap<Machine, MachineDataModel>();
+            cfg.CreateMap<MachineDataModel, Machine>();
+            cfg.CreateMap<Product, ProductDataModel>()
+                .ForMember(dest => dest.Details, opt => opt.MapFrom(x => x.DetailProducts));
+            cfg.CreateMap<ProductDataModel, Product>()
+                .ForMember(dest => dest.DetailProducts, opt => opt.MapFrom(x => x.Details));
         });
         _mapper = new Mapper(config);
     }
@@ -28,7 +36,11 @@ internal class ProductStorageContract : IProductStorageContract
     {
         try
         {
-            var query = _dbContext.Products.AsQueryable();
+            var query = _dbContext.Products
+                .Include(x => x.DetailProducts)!
+                .ThenInclude(x => x.Detail)
+                .Include(x => x.Machine)
+                .AsQueryable();
             if (startDate is not null)
                 query = query.Where(p => p.CreationDate >= startDate.Value);
             if (endDate is not null)
@@ -130,5 +142,9 @@ internal class ProductStorageContract : IProductStorageContract
         }
     }
 
-    private Product? GetProductById(string id) => _dbContext.Products.FirstOrDefault(p => p.Id == id);
+    private Product? GetProductById(string id) => _dbContext.Products
+        .Include(x => x.Machine)
+        .Include(x => x.DetailProducts)!
+        // .ThenInclude(x => x.Detail)
+        .FirstOrDefault(p => p.Id == id);
 }
