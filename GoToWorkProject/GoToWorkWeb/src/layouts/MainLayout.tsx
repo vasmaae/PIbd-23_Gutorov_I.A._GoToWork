@@ -2,6 +2,7 @@ import { Container, Nav, Navbar, Button } from 'react-bootstrap';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { getToken, logout, getUserRole } from '../services/authService';
 import { useEffect, useState } from 'react';
+import Footer from './Footer';
 
 const MainLayout = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(!!getToken());
@@ -46,14 +47,13 @@ const MainLayout = () => {
     );
 
     return (
-        <>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Navbar bg="dark" variant="dark" expand="lg">
                 <Container>
                     <Navbar.Brand as={Link} to="/">Завод "Иди работать"</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <Nav.Link as={Link} to="/">Главная</Nav.Link>
                             {isAuthenticated && userRole === 1 && renderExecutorLinks()}
                             {isAuthenticated && userRole === 2 && renderGuarantorLinks()}
                         </Nav>
@@ -70,10 +70,11 @@ const MainLayout = () => {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
-            <Container className="mt-4">
+            <Container className="mt-4" style={{ flex: 1 }}>
                 <Outlet />
             </Container>
-        </>
+            <Footer />
+        </div>
     );
 };
 

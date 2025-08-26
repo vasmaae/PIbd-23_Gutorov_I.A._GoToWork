@@ -16,12 +16,14 @@ import EmployeeForm from '../components/EmployeeForm';
 import MachineForm from '../components/MachineForm';
 import WorkshopForm from '../components/WorkshopForm';
 
+import HomePage from '../components/HomePage';
+
 const AppRouter = () => {
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<MainLayout />}>
-                    <Route index element={<h1>Главная страница</h1>} />
+                    <Route index element={<HomePage />} />
                     <Route path="login" element={<LoginPage />} />
                     <Route path="register" element={<RegisterPage />} />
                     <Route path="details" element={<DetailsPage />} />
