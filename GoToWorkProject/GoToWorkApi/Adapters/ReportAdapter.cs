@@ -108,11 +108,11 @@ public class ReportAdapter : IReportAdapter
     {
         try
         {
-            await _reportBusinessLogic.SendEmailAsync(
-                await _reportBusinessLogic.CreatePdfDocumentDetailsByMachinesAndProductionsAsync(
-                    await _reportBusinessLogic.GetDetailsByMachinesAndProductionsAsync(
-                        selectedDates.startDate, selectedDates.endDate, ct),
-                    selectedDates.startDate, selectedDates.endDate, ct), selectedDates.email!, "Отчёт о деталях",
+            var report = await _reportBusinessLogic.CreatePdfDocumentDetailsByMachinesAndProductionsAsync(
+                await _reportBusinessLogic.GetDetailsByMachinesAndProductionsAsync(
+                    selectedDates.startDate, selectedDates.endDate, ct),
+                selectedDates.startDate, selectedDates.endDate, ct);
+            await _reportBusinessLogic.SendEmailAsync(report, selectedDates.email!, "Отчёт о деталях",
                 "DetailsReport.pdf", "application/pdf");
             return ReportOperationResponse.NoContent();
         }

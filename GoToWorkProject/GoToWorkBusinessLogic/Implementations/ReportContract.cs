@@ -224,10 +224,11 @@ public class ReportContract(
     public async Task SendEmailAsync(Stream fileStream, string recipientEmail, string subject, string fileName,
         string contentType)
     {
-        var smtpClient = new SmtpClient("smtp.yandex.ru", 465)
+        var smtpClient = new SmtpClient("smtp.yandex.ru", 587)
         {
-            Credentials = new NetworkCredential("vasmaae@yandex.ru", "ofgekxnlntcomanz"),
+            Credentials = new NetworkCredential("vasmaae@yandex.ru", "yyrunxfhsdtprmss"),
             EnableSsl = true
+            
         };
 
         var message = new MailMessage("vasmaae@yandex.ru", recipientEmail)
