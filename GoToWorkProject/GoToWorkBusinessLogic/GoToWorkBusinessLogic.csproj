@@ -21,7 +21,6 @@
         <PackageReference Include="DocX" Version="4.0.25105.5786" />
         <PackageReference Include="MailKit" Version="4.12.1"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4"/>
-        <PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15"/>
     </ItemGroup>
 
 </Project>
