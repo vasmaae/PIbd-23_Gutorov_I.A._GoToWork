@@ -46,6 +46,7 @@ builder.Services.AddScoped<IProductBusinessLogicContract, ProductBusinessLogicCo
 builder.Services.AddScoped<IProductionBusinessLogicContract, ProductionBusinessLogicContract>();
 builder.Services.AddScoped<IUserBusinessLogicContract, UserBusinessLogicContract>();
 builder.Services.AddScoped<IWorkshopBusinessLogicContract, WorkshopBusinessLogicContract>();
+builder.Services.AddScoped<IReportContract, ReportContract>();
 
 // Adapters
 builder.Services.AddScoped<IDetailAdapter, DetailAdapter>();
@@ -55,6 +56,7 @@ builder.Services.AddScoped<IProductAdapter, ProductAdapter>();
 builder.Services.AddScoped<IProductionAdapter, ProductionAdapter>();
 builder.Services.AddScoped<IUserAdapter, UserAdapter>();
 builder.Services.AddScoped<IWorkshopAdapter, WorkshopAdapter>();
+builder.Services.AddScoped<IReportAdapter, ReportAdapter>();
 
 builder.Services.AddControllers();
 

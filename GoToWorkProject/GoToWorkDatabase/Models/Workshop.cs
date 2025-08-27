@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GoToWorkDatabase.Models;
 
-internal class Workshop
+public class Workshop
 {
     public required string Id { get; set; }
     public required string? ProductionId { get; set; }

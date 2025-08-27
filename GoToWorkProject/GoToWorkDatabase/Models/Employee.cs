@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GoToWorkDatabase.Models;
 
-internal class Employee
+public class Employee
 {
     public required string Id { get; set; }
     public required string FullName { get; set; }

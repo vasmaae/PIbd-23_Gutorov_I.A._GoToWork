@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GoToWorkDatabase;
 
-internal class GoToWorkDbContext : DbContext
+public class GoToWorkDbContext : DbContext
 {
     private readonly IConfigurationDatabase? _configurationDatabase;
 

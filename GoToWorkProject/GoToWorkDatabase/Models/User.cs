@@ -2,7 +2,7 @@ using GoToWorkContracts.Enums;
 
 namespace GoToWorkDatabase.Models;
 
-internal class User
+public class User
 {
     public required string Id { get; set; }
     public required string Login { get; set; }

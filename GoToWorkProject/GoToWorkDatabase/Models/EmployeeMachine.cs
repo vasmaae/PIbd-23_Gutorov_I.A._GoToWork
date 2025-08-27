@@ -1,6 +1,6 @@
 namespace GoToWorkDatabase.Models;
 
-internal class EmployeeMachine
+public class EmployeeMachine
 {
     public required string EmployeeId { get; set; }
     public required string MachineId { get; set; }

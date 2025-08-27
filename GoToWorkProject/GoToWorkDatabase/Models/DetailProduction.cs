@@ -1,6 +1,6 @@
 namespace GoToWorkDatabase.Models;
 
-internal class DetailProduction
+public class DetailProduction
 {
     public required string DetailId { get; set; }
     public required string ProductionId { get; set; }

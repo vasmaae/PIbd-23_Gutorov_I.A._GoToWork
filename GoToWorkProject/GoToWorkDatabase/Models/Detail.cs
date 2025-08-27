@@ -3,7 +3,7 @@ using GoToWorkContracts.Enums;
 
 namespace GoToWorkDatabase.Models;
 
-internal class Detail
+public class Detail
 {
     public required string Id { get; set; }
     public required string Name { get; set; }
